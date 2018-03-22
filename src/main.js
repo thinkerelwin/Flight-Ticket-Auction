@@ -3,12 +3,25 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import Vuetify from 'vuetify'
-import 'vuetify/dist/vuetify.min.css'
-
 
 Vue.config.productionTip = false
-Vue.use(Vuetify)
+
+// Vue.component('date-picker', {
+//   template: '<input/>',
+//   props: [ 'format' ],
+//   mounted: function() {
+//     var self = this;
+//     $(this.$el).datepicker({
+//       format: 'yyyy/mm/dd',
+//       todayHighlight: 'true',
+//       autoclose: true,
+//     })
+//     .on('changeDate', function(date) {
+//       // self.$emit('update-date', date);
+//     });
+//   },
+//   // beforeDestroy: function() { ... }
+// });
 
 /* eslint-disable no-new */
 new Vue({

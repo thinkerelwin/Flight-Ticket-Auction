@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import login from '@/components/login'
 import showList from '@/components/showList'
 import addPNR from '@/components/addPNR'
 
@@ -14,9 +15,9 @@ export default new Router({
       component: showList
     },
     {
-      path: '/new',
-      name: 'addPNR',
-      component: addPNR
+      path: '/login',
+      name: 'login',
+      component: login
     }
 
   ]
