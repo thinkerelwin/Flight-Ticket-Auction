@@ -35,18 +35,18 @@
 </template>
 
 <script>
-  import addPNR from './addPNR.vue'
+import addPNR from './addPNR.vue'
 
-  export default {
-    data() {
-      return {
-        username: 'Jason'
-      }
-    },
-    components: {
-      'addPNR': addPNR
+export default {
+  data () {
+    return {
+      username: 'Jason'
     }
+  },
+  components: {
+    'addPNR': addPNR
   }
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

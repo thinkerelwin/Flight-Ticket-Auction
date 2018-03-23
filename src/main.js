@@ -3,7 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-<<<<<<< HEAD
+import axios from 'axios'
 
 Vue.config.productionTip = false
 
@@ -23,12 +23,10 @@ Vue.config.productionTip = false
 //   },
 //   // beforeDestroy: function() { ... }
 // });
-=======
-
-
 
 Vue.config.productionTip = false
->>>>>>> refs/remotes/origin/master
+
+axios.defaults.baseURL = 'https://vue-stocktrader-bbc49.firebaseio.com/'
 
 /* eslint-disable no-new */
 new Vue({

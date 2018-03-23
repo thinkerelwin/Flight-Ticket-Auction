@@ -24,7 +24,7 @@
 <script>
 // $('#startDate').datepicker();
 export default {
-  data() {
+  data () {
     return {
 
     }

@@ -5,12 +5,16 @@
       <div class="input-group col-md-4 mb-3">
         <date-picker class="datechoice" v-model="dateRange" range :shortcuts="shortcuts" placeholder="开始日期-结束日期"></date-picker>
         <p>{{dateRange}}</p>
+        <p>{{dateRange[0]}}</p>
+        <p>{{dateRange[1]}}</p>
+        <p>{{typeof status}}</p>
+        <p>{{typeof operator}}</p>
       </div>
       <div class="input-group col-md-3 mb-3">
         <div class="input-group-prepend">
           <label class="input-group-text" for="ticketStatus">状态</label>
         </div>
-        <select class="custom-select" id="ticketStatus">
+        <select class="custom-select" id="ticketStatus" v-model="status">
           <option selected>全部</option>
           <option value="ready">待出票</option>
           <option value="waiting">待处理</option>
@@ -22,7 +26,7 @@
         <div class="input-group-prepend">
           <label class="input-group-text" for="operator">人员</label>
         </div>
-        <select class="custom-select" id="operator">
+        <select class="custom-select" id="operator" v-model="operator">
           <option selected>Choose...</option>
           <option value="1">One</option>
           <option value="2">Two</option>
@@ -30,7 +34,7 @@
         </select>
       </div>
       <div class="col-md-2">
-        <button class="btn btn-info" type="button" name="search">查询</button>
+        <button class="btn btn-primary" type="button" name="search" @click="query">查询</button>
       </div>
 
       <table class="table table-striped table-hover table-responsive">
@@ -67,7 +71,7 @@ SSR DOCS AA HK1 P/CN/E34297079/CN/03FEB00/M/25JAN19/ZHANG/LINGXI MR/P1 </td>
             <td>待处理</td>
             <td>2201803227434</td>
             <td>详细</td>
-            <td><button>删除</button></td>
+            <td><button class="btn btn-danger">删除</button></td>
           </tr>
           <tr>
             <th scope="row">2018-03-22 13:28:11</th>
@@ -84,7 +88,7 @@ SSR DOCS AA HK1 P/CN/E34297079/CN/03FEB00/M/25JAN19/ZHANG/LINGXI MR/P1 </td>
             <td>待处理</td>
             <td>2201803227434</td>
             <td>详细</td>
-            <td><button>删除</button></td>
+            <td><button class="btn btn-danger">删除</button></td>
           </tr>
         </tbody>
       </table>
@@ -94,23 +98,49 @@ SSR DOCS AA HK1 P/CN/E34297079/CN/03FEB00/M/25JAN19/ZHANG/LINGXI MR/P1 </td>
 </template>
 
 <script>
-  import DatePicker from 'vue2-datepicker'
+import DatePicker from 'vue2-datepicker';
+import axios from 'axios'
 
-  export default {
-    components: { DatePicker },
-    data() {
-      return {
-        dateRange: '',
-        shortcuts: [
-          {
-            text: 'Today',
-            start: new Date(),
-            end: new Date()
-          }
-        ]
-      }
+export default {
+  components: { DatePicker },
+  data () {
+    return {
+      dateRange: [],
+      shortcuts: [
+        {
+          text: 'Today',
+          start: new Date(),
+          end: new Date()
+        }
+      ],
+      // startDate: dateRange[0],
+      // endDate: dateRange[1],
+      status: '',
+      operator: ''
     }
+  },
+  methods: {
+    query () {
+      const formData = {
+        startDate: this.dateRange[0],
+        endDate: this.dateRange[1],
+        status: this.status,
+        operator: this.operator
+      }
+      console.log(formData);
+
+      axios.get('/PNR.json')
+        .then( res => console.log(res))
+        .catch(error => console.log(error))
+      // axios.get('http://kusakawa.ddns.net:8080/farener/public/api/orders.json', formData);
+    }
+  },
+  created() {
+    // axios.get('/PNR.json')
+    //   .then( res => console.log(res))
+    //   .catch(error => console.log(error))
   }
+}
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

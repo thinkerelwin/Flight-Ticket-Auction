@@ -2,7 +2,6 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import login from '@/components/login'
 import showList from '@/components/showList'
-import addPNR from '@/components/addPNR'
 
 Vue.use(Router)
 
