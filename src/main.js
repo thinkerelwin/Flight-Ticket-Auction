@@ -3,6 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+<<<<<<< HEAD
 
 Vue.config.productionTip = false
 
@@ -22,6 +23,12 @@ Vue.config.productionTip = false
 //   },
 //   // beforeDestroy: function() { ... }
 // });
+=======
+
+
+
+Vue.config.productionTip = false
+>>>>>>> refs/remotes/origin/master
 
 /* eslint-disable no-new */
 new Vue({
