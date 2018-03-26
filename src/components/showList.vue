@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container-fluid">
     <div class="row">
 
       <div class="input-group col-md-4 mb-3">
@@ -15,11 +15,11 @@
           <label class="input-group-text" for="ticketStatus">状态</label>
         </div>
         <select class="custom-select" id="ticketStatus" v-model="status">
-          <option selected>全部</option>
-          <option value="ready">待出票</option>
-          <option value="waiting">待处理</option>
-          <option value="open">已出票</option>
-          <option value="cancel">已取消</option>
+          <option value="" selected>全部</option>
+          <option value="待出票">待出票</option>
+          <option value="待处理">待处理</option>
+          <option value="已出票">已出票</option>
+          <option value="已取消">已取消</option>
         </select>
       </div>
       <div class="input-group col-md-3 mb-3">
@@ -42,7 +42,6 @@
           <tr>
             <th scope="col">记录时间</th>
             <th scope="col">航段信息</th>
-            <th scope="col">拉位点</th>
             <th scope="col">备注</th>
             <th scope="col">总价</th>
             <th scope="col">可出票价格</th>
@@ -50,7 +49,6 @@
             <th scope="col">乘机人</th>
             <th scope="col">操作人员</th>
             <th scope="col">状态</th>
-            <th scope="col">订单号</th>
             <th scope="col">详细</th>
             <th scope="col">操作</th>
           </tr>
@@ -62,36 +60,34 @@
  2.  AA178    SU27MAY  MCOLAX HK1   1612 1842          E
 SSR DOCS AA HK1 P/CN/E34297079/CN/03FEB00/M/25JAN19/ZHANG/LINGXI MR/P1 </td>
             <td></td>
-            <td></td>
             <td>512</td>
             <td>775</td>
             <td></td>
             <td>姓名：ZHANG/LINGXI MR</td>
             <td>束海花</td>
             <td>待处理</td>
-            <td>2201803227434</td>
             <td>详细</td>
             <td><button class="btn btn-danger">删除</button></td>
           </tr>
-          <tr>
-            <th scope="row">2018-03-22 13:28:11</th>
-            <td>    1.ZHANG/LINGXI MR KFB63Z
- 2.  AA178    SU27MAY  MCOLAX HK1   1612 1842          E
-SSR DOCS AA HK1 P/CN/E34297079/CN/03FEB00/M/25JAN19/ZHANG/LINGXI MR/P1 </td>
-            <td></td>
-            <td></td>
-            <td>512</td>
-            <td>775</td>
-            <td></td>
-            <td>姓名：ZHANG/LINGXI MR</td>
-            <td>束海花</td>
-            <td>待处理</td>
-            <td>2201803227434</td>
+          <tr v-for="result in results">
+            <th scope="row">{{ result.datetime }}</th>
+            <td>{{ result.flightMsg }}</td>
+            <td>{{ result.comment }}</td>
+            <td>{{ result.price }}</td>
+            <td>{{ result.commitPrice }}</td>
+            <td>{{ result.deadline }}</td>
+            <td><span v-for="passenger in result.passenger">{{ passenger['name'] + ', ' }}</span></td>
+            <td>{{ result.operator }}</td>
+            <td>{{ result.status }}</td>
             <td>详细</td>
             <td><button class="btn btn-danger">删除</button></td>
           </tr>
         </tbody>
       </table>
+
+      <!-- <ol v-for="result in results">
+        <li>{{result.datetime}}</li>
+      </ol> -->
 
     </div>
   </div>
@@ -116,7 +112,9 @@ export default {
       // startDate: dateRange[0],
       // endDate: dateRange[1],
       status: '',
-      operator: ''
+      operator: '',
+      results: {},
+      // displayPassengers: '',
     }
   },
   methods: {
@@ -127,10 +125,28 @@ export default {
         status: this.status,
         operator: this.operator
       }
-      console.log(formData);
 
-      axios.get('/PNR.json')
-        .then( res => console.log(res))
+      // console.log(formData);
+
+      axios.get('', {
+        params: {
+          limit: 'all',
+          searching: `[status,=,${this.status}]`,
+        }
+      })
+        .then( res => {
+          console.log(res);
+          this.results = res.data.result;
+
+          // for (let result in results) {
+          //   for (let passenger in result.passenger)
+          // }
+          // this.displayPassengers = res.data.result.passenger.concat
+
+          console.log(this.results);
+
+
+        })
         .catch(error => console.log(error))
       // axios.get('http://kusakawa.ddns.net:8080/farener/public/api/orders.json', formData);
     }
@@ -164,3 +180,5 @@ export default {
     margin-top: 10px;
   }
 </style>
+<!-- http://kusakawa.ddns.net:8080/farener/public/api/webuy?limit=all&searching=%5Bstatus,%3D,%E5%BE%85%E8%99%95%E7%90%86%5D
+http://kusakawa.ddns.net:8080/farener/public/api/webuy?limit=all&searching=%255Bstatus,%253D,%25E5%25BE%2585%25E8%2599%2595%25E7%2590%2586%255D -->

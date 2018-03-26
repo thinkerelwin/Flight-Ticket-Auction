@@ -26,7 +26,7 @@ Vue.config.productionTip = false
 
 Vue.config.productionTip = false
 
-axios.defaults.baseURL = 'https://vue-stocktrader-bbc49.firebaseio.com/'
+axios.defaults.baseURL = 'http://kusakawa.ddns.net:8080/farener/public/api/webuy'
 
 /* eslint-disable no-new */
 new Vue({
