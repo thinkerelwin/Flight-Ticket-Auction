@@ -12,7 +12,7 @@
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
             <!-- <router-link class="nav-link" to="/new"> -->
-              <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#exampleModalCenter">
+              <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#PNRmodal">
                 Add PNR
               </button><span class="sr-only">(New)</span>
             <!-- </router-link> -->

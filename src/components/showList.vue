@@ -4,11 +4,9 @@
 
       <div class="input-group col-md-4 mb-3">
         <date-picker class="datechoice" v-model="dateRange" range :shortcuts="shortcuts" placeholder="开始日期-结束日期"></date-picker>
-        <p>{{dateRange}}</p>
+        <!-- <p>{{dateRange}}</p>
         <p>{{dateRange[0]}}</p>
-        <p>{{dateRange[1]}}</p>
-        <p>{{typeof status}}</p>
-        <p>{{typeof operator}}</p>
+        <p>{{dateRange[1]}}</p> -->
       </div>
       <div class="input-group col-md-3 mb-3">
         <div class="input-group-prepend">
@@ -26,8 +24,8 @@
         <div class="input-group-prepend">
           <label class="input-group-text" for="operator">人员</label>
         </div>
-        <select class="custom-select" id="operator" v-model="operator">
-          <option selected>Choose...</option>
+        <select class="custom-select" id="operator" v-model="recordOperator">
+          <option value="" selected>Choose...</option>
           <option value="1">One</option>
           <option value="2">Two</option>
           <option value="3">Three</option>
@@ -54,22 +52,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <th scope="row">2018-03-22 13:28:11</th>
-            <td>    1.ZHANG/LINGXI MR KFB63Z
- 2.  AA178    SU27MAY  MCOLAX HK1   1612 1842          E
-SSR DOCS AA HK1 P/CN/E34297079/CN/03FEB00/M/25JAN19/ZHANG/LINGXI MR/P1 </td>
-            <td></td>
-            <td>512</td>
-            <td>775</td>
-            <td></td>
-            <td>姓名：ZHANG/LINGXI MR</td>
-            <td>束海花</td>
-            <td>待处理</td>
-            <td>详细</td>
-            <td><button class="btn btn-danger">删除</button></td>
-          </tr>
-          <tr v-for="result in results">
+          <tr v-for="(result, index) in results" :key="result._id.$oid"> <!-- :key="result.oid" -->
             <th scope="row">{{ result.datetime }}</th>
             <td>{{ result.flightMsg }}</td>
             <td>{{ result.comment }}</td>
@@ -77,17 +60,36 @@ SSR DOCS AA HK1 P/CN/E34297079/CN/03FEB00/M/25JAN19/ZHANG/LINGXI MR/P1 </td>
             <td>{{ result.commitPrice }}</td>
             <td>{{ result.deadline }}</td>
             <td><span v-for="passenger in result.passenger">{{ passenger['name'] + ', ' }}</span></td>
-            <td>{{ result.operator }}</td>
+            <td>{{ result.recordOperator }}</td>
             <td>{{ result.status }}</td>
-            <td>详细</td>
-            <td><button class="btn btn-danger">删除</button></td>
+            <td><button type="btn btn-info" @click="changeOrder(result)">详细</button></td>
+            <td>
+              <button class="btn btn-danger" @click="deleteOrder(index, result, results)">删除</button>
+              <!-- <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#confirmDelete">
+                確認删除
+              </button> -->
+            </td>
           </tr>
         </tbody>
       </table>
 
-      <!-- <ol v-for="result in results">
-        <li>{{result.datetime}}</li>
-      </ol> -->
+      <!-- <div class="modal fade" id="confirmDelete" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="confirmDeleteTitle">确认删除</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">清空PNR</button>
+              <button type="button" class="btn btn-primary" @click="" data-dismiss="modal">提交</button>
+            </div>
+          </div>
+        </div>
+      </div> -->
 
     </div>
   </div>
@@ -101,7 +103,7 @@ export default {
   components: { DatePicker },
   data () {
     return {
-      dateRange: [],
+      dateRange: '',
       shortcuts: [
         {
           text: 'Today',
@@ -112,7 +114,7 @@ export default {
       // startDate: dateRange[0],
       // endDate: dateRange[1],
       status: '',
-      operator: '',
+      recordOperator: '',
       results: {},
       // displayPassengers: '',
     }
@@ -120,22 +122,41 @@ export default {
   methods: {
     query () {
       const formData = {
-        startDate: this.dateRange[0],
-        endDate: this.dateRange[1],
+        startDate: this.dateRange[0].toISOString().slice(0, 10),
+        endDate: this.dateRange[1].toISOString().slice(0 ,10),
         status: this.status,
-        operator: this.operator
+        recordOperator: this.recordOperator
       }
 
-      // console.log(formData);
+      console.log(formData);
+
+      function searchString() {
+        let queryString = '';
+
+        if (formData.startDate == formData.endDate) {
+          queryString += `[recordTime,=,${formData.startDate}]`
+        } else {
+          queryString += `[recordTime,>,${formData.startDate}],[recordTime,<,${formData.endDate}]`
+        }
+
+        if (formData.status) {
+          queryString += `,[status,=,${formData.status}]`
+        }
+        if (formData.recordOperator) {
+          queryString += `,[recordOperator,=,${formData.recordOperator}]` //currently bugged
+        }
+        console.log(queryString);
+        return queryString
+      }
 
       axios.get('', {
         params: {
           limit: 'all',
-          searching: `[status,=,${this.status}]`,
+          searching: searchString(),
         }
       })
         .then( res => {
-          console.log(res);
+          // console.log(res);
           this.results = res.data.result;
 
           // for (let result in results) {
@@ -143,12 +164,52 @@ export default {
           // }
           // this.displayPassengers = res.data.result.passenger.concat
 
-          console.log(this.results);
-
-
+          // console.log(this.results);
         })
         .catch(error => console.log(error))
       // axios.get('http://kusakawa.ddns.net:8080/farener/public/api/orders.json', formData);
+    },
+    changeOrder(result) {
+      axios.patch('', {
+
+        // data: {
+        //   id: result._id.$oid,
+        //   passenger: [{"name": "elwin","ticketNumber": "123123"}, {"name": "kwan"}]
+        // }
+          id: result._id.$oid,
+          passenger: [
+            {
+              "name":"Kuan",
+              "ticketnumber":"123123"
+            },
+            {
+              "name":"Me",
+              "ticketnumber":"555"
+            },
+          ],
+          flightMsg: 'change message by axios',
+
+      }).then( res => {
+        this.results = res.data.result;
+      }).catch(error => console.log(error))
+    },
+
+    // params: {
+    //   id: result._id.$oid,
+    //   // flightMsg: 'change message by axios',
+    //   // status: '已取消',
+    //   // price: 777,
+    //   // commitprice: 666,
+    //   // comment: 'add via axios',
+    //   passenger: [{"name": "elwin","ticketNumber": "123123"}, {"name": "kwan"}]
+    // }
+    deleteOrder(index, result, results) {
+      results.splice(index, 1);
+      axios.delete('', {
+        params: {
+          id: result._id.$oid,
+        }
+      })
     }
   },
   created() {

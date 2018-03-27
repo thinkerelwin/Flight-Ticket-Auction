@@ -1,10 +1,10 @@
 <template>
     <!-- Modal -->
-    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal fade" id="PNRmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLongTitle">Add PNR</h5>
+            <h5 class="modal-title" id="PNRmodalTitle">Add PNR</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -12,37 +12,33 @@
 
           <div class="modal-body">
             <form>
+              <div class="form-group">
+                  <label for="flightRoute" class="col-form-label">PNR航段信息:</label>
+                  <textarea type="textarea" class="form-control" id="flightRoute" v-model="flightMsg" rows="4"></textarea>
+              </div>
               <div class="form-group row">
                 <div class="col-6">
                   <label for="price" class="col-form-label">总价:</label>
                   <input type="text" class="form-control" id="price" v-model="price">
                 </div>
                 <div class="col-6">
-                  <label for="flightRoute" class="col-form-label">PNR航段信息:</label>
-                  <input type="text" class="form-control" id="flightRoute" v-model="flightMsg">
+                  <label for="dead-line" class="col-form-label">最晚出票时间:</label>
+                  <input type="text" class="form-control" id="dead-line" v-model="deadline" placeholder="ex: 2018-03-27">
                 </div>
               </div>
               <div class="form-group">
                 <label for="passengers" class="col-form-label">乘机人:</label>
-                <input type="text" class="form-control" id="passengers" v-model="passenger">
+                <input type="text" class="form-control" id="passengers" v-model="passenger" placeholder="多个 '|' 隔开">
               </div>
               <div class="form-group">
                 <label for="extra" class="col-form-label">备注:</label>
                 <input type="text" class="form-control" id="extra" v-model="comment">
-              </div>
-              <div class="form-group row">
-                <div class="col-6">
-                  <label for="dead-line" class="col-form-label">最晚出票时间:</label>
-                  <input type="text" class="form-control" id="dead-line" v-model="deadline">
-                </div>
-
               </div>
               <div class="form-check">
                 <input class="form-check-input" type="checkbox" value="" id="emergency" v-model="isRush">
                 <label class="form-check-label" for="emergency">
                   加急票
                 </label>
-                <p>{{deadline}}</p>
               </div>
             </form>
           </div>
@@ -63,13 +59,13 @@ import axios from 'axios'
 export default {
   data () {
     return {
-      flightMsg: [],
-      price: null,
+      flightMsg: '',
+      price: '',
       comment: '',
-      passenger: [],
+      passenger: '',
       deadline: '',
       isRush: false,
-      recordOperator: ''
+      recordOperator: '1' // should be take in automatically
     }
   },
   methods: {
@@ -80,7 +76,7 @@ export default {
         // negotiablePrice: '',
         // createdTime: new Date(),
         // history: []
-        flightMsg: [],
+        flightMsg: this.flightMsg,
         price: this.price,
         comment: this.comment,
         passenger: this.passenger,
@@ -90,8 +86,18 @@ export default {
       }
       console.log(formData);
       axios.post('', formData)
-        .then(res => console.log(res))
+        .then(res => {
+          console.log(res);
+
+          this.flightMsg = '';
+          this.price = '';
+          this.comment = '';
+          this.passenger = '';
+          this.deadline = '';
+          this.isRush = false
+        })
         .catch(error => console.log(error))
+
     }
   }
 }
