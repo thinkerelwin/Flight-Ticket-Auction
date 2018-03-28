@@ -1,10 +1,10 @@
 <template>
     <!-- Modal -->
     <div class="modal fade" id="PNRmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="PNRmodalTitle">Add PNR</h5>
+            <h5 class="modal-title">Add PNR</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -71,11 +71,7 @@ export default {
   methods: {
     submitForm () {
       const formData = {
-        // referenceNumber: '1',
-        // operator: 'elwin',
-        // negotiablePrice: '',
-        // createdTime: new Date(),
-        // history: []
+
         flightMsg: this.flightMsg,
         price: this.price,
         comment: this.comment,
@@ -105,5 +101,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
+  .modal-footer {
+    border-top-width: 0;
+  }
 </style>

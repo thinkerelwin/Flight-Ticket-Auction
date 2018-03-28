@@ -52,26 +52,32 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(result, index) in results" :key="result._id.$oid"> <!-- :key="result.oid" -->
+          <tr v-for="(result, index) in results" :key="result._id.$oid">
             <th scope="row">{{ result.datetime }}</th>
             <td>{{ result.flightMsg }}</td>
             <td>{{ result.comment }}</td>
             <td>{{ result.price }}</td>
             <td>{{ result.commitPrice }}</td>
             <td>{{ result.deadline }}</td>
-            <td><span v-for="passenger in result.passenger">{{ passenger['name'] + ', ' }}</span></td>
+            <td><p v-for="passenger in result.passenger">{{ passenger['name'] }}</p></td>
             <td>{{ result.recordOperator }}</td>
             <td>{{ result.status }}</td>
-            <td><button type="btn btn-info" @click="changeOrder(result)">详细</button></td>
             <td>
-              <button class="btn btn-danger" @click="deleteOrder(index, result, results)">删除</button>
+              <!-- <button type="btn btn-info" @click="changeOrder(result)">详细</button> -->
+              <button class="btn btn-info" data-toggle="modal" :data-target="'#modal' + index">详细</button>
+              <orderDetails :result="result" :index="index"></orderDetails>
+            </td>
+            <td>
+              <button class="btn btn-danger" @click="deleteOrder(result, index)">删除</button>
               <!-- <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#confirmDelete">
                 確認删除
               </button> -->
             </td>
+
           </tr>
         </tbody>
       </table>
+
 
       <!-- <div class="modal fade" id="confirmDelete" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -98,9 +104,13 @@
 <script>
 import DatePicker from 'vue2-datepicker';
 import axios from 'axios'
+import orderDetails from './orderDetails.vue'
 
 export default {
-  components: { DatePicker },
+  components: {
+    DatePicker,
+    'orderDetails': orderDetails
+  },
   data () {
     return {
       dateRange: '',
@@ -169,31 +179,6 @@ export default {
         .catch(error => console.log(error))
       // axios.get('http://kusakawa.ddns.net:8080/farener/public/api/orders.json', formData);
     },
-    changeOrder(result) {
-      axios.patch('', {
-
-        // data: {
-        //   id: result._id.$oid,
-        //   passenger: [{"name": "elwin","ticketNumber": "123123"}, {"name": "kwan"}]
-        // }
-          id: result._id.$oid,
-          passenger: [
-            {
-              "name":"Kuan",
-              "ticketnumber":"123123"
-            },
-            {
-              "name":"Me",
-              "ticketnumber":"555"
-            },
-          ],
-          flightMsg: 'change message by axios',
-
-      }).then( res => {
-        this.results = res.data.result;
-      }).catch(error => console.log(error))
-    },
-
     // params: {
     //   id: result._id.$oid,
     //   // flightMsg: 'change message by axios',
@@ -204,7 +189,7 @@ export default {
     //   passenger: [{"name": "elwin","ticketNumber": "123123"}, {"name": "kwan"}]
     // }
     deleteOrder(index, result, results) {
-      results.splice(index, 1);
+      this.results.splice(index, 1);
       axios.delete('', {
         params: {
           id: result._id.$oid,
