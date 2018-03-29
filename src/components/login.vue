@@ -1,6 +1,6 @@
 <template>
   <div class="container loginForm">
-    <form action="/login" method="POST">
+    <form>
       <fieldset>
         <legend>用户登录</legend>
         <div class="input-group mb-3">
@@ -34,6 +34,9 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+  legend {
+    text-align: center;
+  }
   .loginForm {
   min-width: 250px;
   width: 30%;

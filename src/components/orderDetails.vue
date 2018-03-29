@@ -14,12 +14,18 @@
             <form>
               <div class="form-group">
                   <label for="specific-flightRoute" class="col-form-label">PNR航段信息:(Only farener can revise)</label>
-                  <textarea type="textarea" class="form-control" id="specific-flightRoute" v-model="result.flightMsg" rows="4"></textarea>
+                  <textarea type="textarea" class="form-control" id="specific-flightRoute" v-model="result.flightMsg" rows="4" readonly></textarea>
               </div>
               <div class="form-group row">
                 <div class="col-6">
-                  <label for="specific-price" class="col-form-label">总价:(revisable)</label>
+                  <label for="specific-price" class="col-form-label">总价:</label>
                   <input type="text" class="form-control" id="specific-price" v-model="result.price">
+                </div>
+              </div>
+              <div class="form-group row">
+                <div class="col-6">
+                  <label for="recordLocator" class="col-form-label">订位代码:</label>
+                  <input type="text" class="form-control" id="recordLocator" v-model="result.recordlocator">
                 </div>
                 <div class="col-6">
                   <label for="specific-dead-line" class="col-form-label">最晚出票时间:</label>
@@ -40,7 +46,7 @@
               </div>
               <div class="form-group row">
                 <div class="offset-6 col-6">
-                  <button type="button" class="btn btn-success" @click="confirmTicket(result)">确认出票</button>
+                  <button type="button" class="btn btn-success" @click="confirmTicket(result)" data-dismiss="modal">确认出票</button>
                 </div>
               </div>
               <div class="form-group row">
@@ -53,27 +59,27 @@
               </div>
               <div class="form-group row">
                 <div class="offset-6 col-6">
-                  <button type="button" class="btn btn-warning" @click="negotiatePrice(result)">暂不能出票</button>
+                  <button type="button" class="btn btn-warning" @click="negotiatePrice(result)" data-dismiss="modal" >暂不能出票</button>
                 </div>
               </div>
               <div class="form-group">
                 <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" id="Position" value="noPosition" v-model="rejectReason">
+                  <input class="form-check-input" type="radio" id="Position" value="没有舱位" v-model="rejectReason">
                   <label class="form-check-label" for="Position">没有舱位</label>
                 </div>
                 <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" id="Price" value="noPrice" v-model="rejectReason">
+                  <input class="form-check-input" type="radio" id="Price" value="没有票价" v-model="rejectReason">
                   <label class="form-check-label" for="Price">没有票价</label>
                 </div>
               </div>
               <div class="form-group row">
                 <div class="offset-6 col-6">
-                  <button type="button" class="btn btn-danger">拒绝出票</button>
+                  <button type="button" class="btn btn-danger" @click="cancelOrder(result)" data-dismiss="modal">拒绝出票</button>
                 </div>
               </div>
               <div class="form-group message-board">
                 <p v-for="log in result.logs">
-                  记录时间: {{log.time}}  操作人: {{log.operator}}  描述: <span v-for="specificLog in log.operation">{{specificLog}}</span>
+                  记录时间: {{log.time}}  操作人: {{log.operator}}  <b>描述: </b><span v-for="specificLog in log.operation">{{specificLog}}, </span>
                 </p>
               </div>
             </form>
@@ -108,73 +114,36 @@ export default {
     confirmTicket (result) {
 
       axios.patch('', {
-
           id: result._id.$oid,
+          flightMsg: result.flightMsg,
+          price: result.price,
+          recordlocator: result.recordlocator,
           status: "已出票",
           passenger: result.passenger,
-
       })
     },
     negotiatePrice (result) {
       axios.patch('', {
-
         // data: {
         //   id: result._id.$oid,
         //   passenger: [{"name": "elwin","ticketNumber": "123123"}, {"name": "kwan"}]
         // }
           id: result._id.$oid,
           status: "待處理",
+          commitprice: this.commitPrice,
       })
     },
-    changeOrder(result) {
+    cancelOrder(result) {
       axios.patch('', {
 
-        // data: {
-        //   id: result._id.$oid,
-        //   passenger: [{"name": "elwin","ticketNumber": "123123"}, {"name": "kwan"}]
-        // }
           id: result._id.$oid,
-          passenger: [
-            {
-              "name":"Kuan",
-              "ticketnumber":"123123"
-            },
-            {
-              "name":"Me",
-              "ticketnumber":"555"
-            },
-          ],
-          flightMsg: 'change message by axios',
+          status: "已取消",
+          comment: this.rejectReason,
 
       }).then( res => {
         this.results = res.data.result;
       }).catch(error => console.log(error))
     },
-    // submitForm () {
-    //   const formData = {
-    //     flightMsg: this.flightMsg,
-    //     price: this.price,
-    //     comment: this.comment,
-    //     passenger: this.passenger,
-    //     deadline: this.deadline,
-    //     isRush: this.isRush,
-    //     recordOperator: this.recordOperator // should get recordOperator automatically
-    //   }
-    //   console.log(formData);
-    //   axios.post('', formData)
-    //     .then(res => {
-    //       console.log(res);
-    //
-    //       this.flightMsg = '';
-    //       this.price = '';
-    //       this.comment = '';
-    //       this.passenger = '';
-    //       this.deadline = '';
-    //       this.isRush = false
-    //     })
-    //     .catch(error => console.log(error))
-    //
-    // }
   }
 }
 </script>
@@ -191,5 +160,6 @@ export default {
     border: 1px solid grey;
     padding: 5px;
     margin-bottom: 0;
+    font-size: 14px;
   }
 </style>

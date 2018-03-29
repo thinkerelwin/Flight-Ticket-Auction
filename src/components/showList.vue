@@ -3,10 +3,9 @@
     <div class="row">
 
       <div class="input-group col-md-4 mb-3">
-        <date-picker class="datechoice" v-model="dateRange" range :shortcuts="shortcuts" placeholder="开始日期-结束日期"></date-picker>
-        <!-- <p>{{dateRange}}</p>
-        <p>{{dateRange[0]}}</p>
-        <p>{{dateRange[1]}}</p> -->
+        <date-picker class="datechoice" v-model="dateRange" range :shortcuts="shortcuts" placeholder="开始日期-结束日期" required></date-picker>
+        <!-- <p>{{dateRange}}</p> -->
+        <p>{{new Date()}}</p>
       </div>
       <div class="input-group col-md-3 mb-3">
         <div class="input-group-prepend">
@@ -15,7 +14,7 @@
         <select class="custom-select" id="ticketStatus" v-model="status">
           <option value="" selected>全部</option>
           <option value="待出票">待出票</option>
-          <option value="待处理">待处理</option>
+          <option value="待處理">待处理</option>
           <option value="已出票">已出票</option>
           <option value="已取消">已取消</option>
         </select>
@@ -54,10 +53,10 @@
         <tbody>
           <tr v-for="(result, index) in results" :key="result._id.$oid">
             <th scope="row">{{ result.datetime }}</th>
-            <td>{{ result.flightMsg }}</td>
+            <td><pre>{{ result.flightMsg }}</pre></td>
             <td>{{ result.comment }}</td>
             <td>{{ result.price }}</td>
-            <td>{{ result.commitPrice }}</td>
+            <td>{{ result.commitprice }}</td>
             <td>{{ result.deadline }}</td>
             <td><p v-for="passenger in result.passenger">{{ passenger['name'] }}</p></td>
             <td>{{ result.recordOperator }}</td>
@@ -68,7 +67,8 @@
               <orderDetails :result="result" :index="index"></orderDetails>
             </td>
             <td>
-              <button class="btn btn-danger" @click="deleteOrder(result, index)">删除</button>
+              <button class="btn btn-danger addspace" @click="deleteOrder(result, index)">删除</button>
+              <button v-if="result.isRush == 'false'" class="btn btn-warning" @click="changeToRush(result)">加急</button>
               <!-- <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#confirmDelete">
                 確認删除
               </button> -->
@@ -121,16 +121,16 @@ export default {
           end: new Date()
         }
       ],
-      // startDate: dateRange[0],
-      // endDate: dateRange[1],
       status: '',
       recordOperator: '',
       results: {},
-      // displayPassengers: '',
     }
   },
   methods: {
     query () {
+      if (!this.dateRange) {
+        console.log("it's empty!")
+      }
       const formData = {
         startDate: this.dateRange[0].toISOString().slice(0, 10),
         endDate: this.dateRange[1].toISOString().slice(0 ,10),
@@ -162,10 +162,10 @@ export default {
       axios.get('', {
         params: {
           limit: 'all',
+          orderMethod: 'desc',
           searching: searchString(),
         }
-      })
-        .then( res => {
+      }).then( res => {
           // console.log(res);
           this.results = res.data.result;
 
@@ -179,23 +179,23 @@ export default {
         .catch(error => console.log(error))
       // axios.get('http://kusakawa.ddns.net:8080/farener/public/api/orders.json', formData);
     },
-    // params: {
-    //   id: result._id.$oid,
-    //   // flightMsg: 'change message by axios',
-    //   // status: '已取消',
-    //   // price: 777,
-    //   // commitprice: 666,
-    //   // comment: 'add via axios',
-    //   passenger: [{"name": "elwin","ticketNumber": "123123"}, {"name": "kwan"}]
-    // }
-    deleteOrder(index, result, results) {
+    changeToRush(result) {
+
+      axios.patch('', {
+          id: result._id.$oid,
+          isRush: true,
+      }).then(alert("加急成功!"))
+        .catch(error => console.log(error))
+
+    },
+    deleteOrder(result, index) {
       this.results.splice(index, 1);
       axios.delete('', {
         params: {
           id: result._id.$oid,
         }
       })
-    }
+    },
   },
   created() {
     // axios.get('/PNR.json')
@@ -209,8 +209,6 @@ export default {
 <style scoped>
   .container {
     /* background-color: rgb(236, 236, 236); */
-    /* margin: 0;
-    padding: 3%;  */
   }
   .datechoice {
     width: 100% !important;
@@ -225,6 +223,8 @@ export default {
   table {
     margin-top: 10px;
   }
+  td button {
+    display: block;
+    margin-bottom: 5px;
+  }
 </style>
-<!-- http://kusakawa.ddns.net:8080/farener/public/api/webuy?limit=all&searching=%5Bstatus,%3D,%E5%BE%85%E8%99%95%E7%90%86%5D
-http://kusakawa.ddns.net:8080/farener/public/api/webuy?limit=all&searching=%255Bstatus,%253D,%25E5%25BE%2585%25E8%2599%2595%25E7%2590%2586%255D -->

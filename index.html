@@ -6,6 +6,27 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker.min.css">
     <title>Farener WeBuy</title>
+    <script>
+    function GetIEVersion() {
+      var sAgent = window.navigator.userAgent;
+      var Idx = sAgent.indexOf("MSIE");
+
+      // If IE, return version number.
+      if (Idx > 0)
+        return parseInt(sAgent.substring(Idx+ 5, sAgent.indexOf(".", Idx)));
+
+      // If IE 11 then look for Updated user agent string.
+      else if (!!navigator.userAgent.match(/Trident\/7\./))
+        return 11;
+
+      else
+        return 0; //It is not IE
+      }
+
+      if (GetIEVersion() > 0) {
+        alert("Please use browser other than IE, it's not supported in this website~");
+      }
+    </script>
   </head>
   <body>
     <div id="app"></div>
