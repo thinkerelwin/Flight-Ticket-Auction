@@ -81,7 +81,7 @@ export default {
         recordOperator: this.recordOperator // should get recordOperator automatically
       }
       console.log(formData);
-      axios.post('', formData)
+      axios.post('api/webuy', formData)
         .then(res => {
           console.log(res);
 

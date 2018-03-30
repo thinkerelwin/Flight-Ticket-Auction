@@ -4,7 +4,7 @@
 
       <div class="input-group col-md-4 mb-3">
         <date-picker class="datechoice" v-model="dateRange" range :shortcuts="shortcuts" placeholder="开始日期-结束日期" required></date-picker>
-        <!-- <p>{{dateRange}}</p> -->
+        <p>{{dateRange}}</p>
         <p>{{new Date()}}</p>
       </div>
       <div class="input-group col-md-3 mb-3">
@@ -98,6 +98,7 @@
       </div> -->
 
     </div>
+    <p>{{authData}}</p>
   </div>
 </template>
 
@@ -107,6 +108,7 @@ import axios from 'axios'
 import orderDetails from './orderDetails.vue'
 
 export default {
+  // props: ['authData'],
   components: {
     DatePicker,
     'orderDetails': orderDetails
@@ -128,9 +130,23 @@ export default {
   },
   methods: {
     query () {
-      if (!this.dateRange) {
-        console.log("it's empty!")
-      }
+
+      // if no date entry, set default daterange to today
+      // code below is bugged
+      // if (!this.dateRange) {
+      //   let defaultStartDate = new Date()
+      //   let defaultEndDate = new Date()
+      //   console.log(`[${defaultStartDate.toISOString()}, ${defaultEndDate.toISOString()}]`)
+      //   defaultStartDate.setUTCHours(10)
+      //   defaultEndDate.setUTCHours(34)
+      //   console.log(`after set hours: [${defaultStartDate.toISOString().slice(0, 10)}, ${defaultEndDate.toISOString().slice(0, 10)}]`)
+      //   // this.dateRange = `[${new Date().toISOString}, ${new Date().toISOString}]`
+      //   this.dateRange = [defaultStartDate, defaultEndDate]
+      // } else if (this.dateRange[0] !== this.dateRange[1]) {
+      //   this.dateRange[0].setUTCHours(10)
+      //   this.dateRange[1].setUTCHours(34)
+      // }
+
       const formData = {
         startDate: this.dateRange[0].toISOString().slice(0, 10),
         endDate: this.dateRange[1].toISOString().slice(0 ,10),
@@ -159,9 +175,10 @@ export default {
         return queryString
       }
 
-      axios.get('', {
+      axios.get('api/webuy', {
         params: {
           limit: 'all',
+          orderBy: 'datetime',
           orderMethod: 'desc',
           searching: searchString(),
         }
@@ -181,7 +198,7 @@ export default {
     },
     changeToRush(result) {
 
-      axios.patch('', {
+      axios.patch('api/webuy', {
           id: result._id.$oid,
           isRush: true,
       }).then(alert("加急成功!"))
@@ -190,7 +207,7 @@ export default {
     },
     deleteOrder(result, index) {
       this.results.splice(index, 1);
-      axios.delete('', {
+      axios.delete('api/webuy', {
         params: {
           id: result._id.$oid,
         }

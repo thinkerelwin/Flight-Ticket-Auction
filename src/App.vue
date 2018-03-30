@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <appHeader></appHeader>
+    <!-- <router-view @passingAuthInfo="authdata = $event" :authData="authdata"/> -->
     <router-view/>
   </div>
 </template>
@@ -12,7 +13,18 @@ export default {
   name: 'App',
   components: {
     'appHeader': appHeader
-  }
+  },
+  // data() {
+  //   return {
+  //     authdata: '',
+  //     id: null,
+  //     name: '',
+  //     password: '',
+  //     cooperation: '',
+  //     auth: '',
+  //     token: '',
+  //   }
+  // }
 }
 
 </script>

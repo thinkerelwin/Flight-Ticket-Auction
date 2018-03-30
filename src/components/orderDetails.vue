@@ -113,7 +113,7 @@ export default {
   methods: {
     confirmTicket (result) {
 
-      axios.patch('', {
+      axios.patch('api/webuy', {
           id: result._id.$oid,
           flightMsg: result.flightMsg,
           price: result.price,
@@ -123,7 +123,7 @@ export default {
       })
     },
     negotiatePrice (result) {
-      axios.patch('', {
+      axios.patch('api/webuy', {
         // data: {
         //   id: result._id.$oid,
         //   passenger: [{"name": "elwin","ticketNumber": "123123"}, {"name": "kwan"}]
@@ -134,7 +134,7 @@ export default {
       })
     },
     cancelOrder(result) {
-      axios.patch('', {
+      axios.patch('api/webuy', {
 
           id: result._id.$oid,
           status: "已取消",
