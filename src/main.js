@@ -6,7 +6,7 @@ import router from './router'
 import axios from 'axios'
 import store from './store'
 
-Vue.config.productionTip = false
+// Vue.config.productionTip = false
 
 // Vue.component('date-picker', {
 //   template: '<input/>',
@@ -26,12 +26,12 @@ Vue.config.productionTip = false
 // });
 
 axios.defaults.baseURL = 'http://kusakawa.ddns.net:8080/farener/public/'
+axios.defaults.headers.get['Accepts'] = 'application/json'
 
 const reqInterceptor = axios.interceptors.request.use(config => {
   console.log('Request Interceptor', config)
   return config
 })
-
 const resInterceptor = axios.interceptors.response.use(res => {
   console.log('Response Interceptor', res)
   return res
@@ -44,6 +44,7 @@ axios.interceptors.response.eject(resInterceptor)
 new Vue({
   el: '#app',
   router,
+  store,
   components: { App },
   template: '<App/>'
 })

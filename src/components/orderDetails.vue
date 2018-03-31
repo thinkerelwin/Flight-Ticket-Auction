@@ -110,8 +110,18 @@ export default {
       commitPrice: null,
     }
   },
+  computed: {
+    idToken() {
+      return this.$store.getters.idToken
+    }
+  },
   methods: {
     confirmTicket (result) {
+      const authHeader = {
+        headers: {
+          'Authorization': 'Bearer ' + this.idToken
+        }
+      }
 
       axios.patch('api/webuy', {
           id: result._id.$oid,
@@ -120,9 +130,15 @@ export default {
           recordlocator: result.recordlocator,
           status: "已出票",
           passenger: result.passenger,
-      })
+      }, authHeader)
     },
     negotiatePrice (result) {
+      const authHeader = {
+        headers: {
+          'Authorization': 'Bearer ' + this.idToken
+        }
+      }
+
       axios.patch('api/webuy', {
         // data: {
         //   id: result._id.$oid,
@@ -131,16 +147,22 @@ export default {
           id: result._id.$oid,
           status: "待處理",
           commitprice: this.commitPrice,
-      })
+      }, authHeader)
     },
     cancelOrder(result) {
+      const authHeader = {
+        headers: {
+          'Authorization': 'Bearer ' + this.idToken
+        }
+      }
+
       axios.patch('api/webuy', {
 
           id: result._id.$oid,
           status: "已取消",
           comment: this.rejectReason,
 
-      }).then( res => {
+      }, authHeader).then( res => {
         this.results = res.data.result;
       }).catch(error => console.log(error))
     },

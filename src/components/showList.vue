@@ -23,15 +23,15 @@
         <div class="input-group-prepend">
           <label class="input-group-text" for="operator">人员</label>
         </div>
-        <select class="custom-select" id="operator" v-model="recordOperator">
+        <!-- <select class="custom-select" id="operator" v-model="recordOperator">
           <option value="" selected>Choose...</option>
           <option value="1">One</option>
           <option value="2">Two</option>
           <option value="3">Three</option>
-        </select>
+        </select> -->
       </div>
       <div class="col-md-2">
-        <button class="btn btn-primary" type="button" name="search" @click="query">查询</button>
+        <button class="btn btn-primary" type="button" name="search" @click="query()">查询</button>
       </div>
 
       <table class="table table-striped table-hover table-responsive">
@@ -44,7 +44,7 @@
             <th scope="col">可出票价格</th>
             <th scope="col">最晚出票时间</th>
             <th scope="col">乘机人</th>
-            <th scope="col">操作人员</th>
+            <!-- <th scope="col">操作人员</th> -->
             <th scope="col">状态</th>
             <th scope="col">详细</th>
             <th scope="col">操作</th>
@@ -59,10 +59,9 @@
             <td>{{ result.commitprice }}</td>
             <td>{{ result.deadline }}</td>
             <td><p v-for="passenger in result.passenger">{{ passenger['name'] }}</p></td>
-            <td>{{ result.recordOperator }}</td>
+            <!-- <td>{{ result.recordOperator }}</td> -->
             <td>{{ result.status }}</td>
             <td>
-              <!-- <button type="btn btn-info" @click="changeOrder(result)">详细</button> -->
               <button class="btn btn-info" data-toggle="modal" :data-target="'#modal' + index">详细</button>
               <orderDetails :result="result" :index="index"></orderDetails>
             </td>
@@ -98,7 +97,6 @@
       </div> -->
 
     </div>
-    <p>{{authData}}</p>
   </div>
 </template>
 
@@ -124,8 +122,16 @@ export default {
         }
       ],
       status: '',
-      recordOperator: '',
-      results: {},
+      // recordOperator: '',
+      // results: {},
+    }
+  },
+  computed: {
+    results() {
+      return this.$store.getters.results
+    },
+    idToken() {
+      return this.$store.getters.idToken
     }
   },
   methods: {
@@ -147,78 +153,77 @@ export default {
       //   this.dateRange[1].setUTCHours(34)
       // }
 
-      const formData = {
-        startDate: this.dateRange[0].toISOString().slice(0, 10),
-        endDate: this.dateRange[1].toISOString().slice(0 ,10),
-        status: this.status,
-        recordOperator: this.recordOperator
-      }
+// original function start here
 
-      console.log(formData);
+      this.$store.dispatch('queryorder', {dateRange: this.dateRange, status: this.status})
+      // const formData = {
+      //   startDate: this.dateRange[0].toISOString().slice(0, 10),
+      //   endDate: this.dateRange[1].toISOString().slice(0 ,10),
+      //   status: this.status,
+      //   recordOperator: this.recordOperator
+      // }
+      //
+      // console.log(formData);
+      //
+      // function searchString() {
+      //   let queryString = '';
+      //
+      //   if (formData.startDate == formData.endDate) {
+      //     queryString += `[recordTime,=,${formData.startDate}]`
+      //   } else {
+      //     queryString += `[recordTime,>,${formData.startDate}],[recordTime,<,${formData.endDate}]`
+      //   }
+      //
+      //   if (formData.status) {
+      //     queryString += `,[status,=,${formData.status}]`
+      //   }
+      //   if (formData.recordOperator) {
+      //     queryString += `,[recordOperator,=,${formData.recordOperator}]` //currently bugged
+      //   }
+      //   console.log(queryString);
+      //   return queryString
+      // }
+      //
+      // axios.get('api/webuy', {
+      //   params: {
+      //     limit: 'all',
+      //     orderBy: 'datetime',
+      //     orderMethod: 'desc',
+      //     searching: searchString(),
+      //   }
+      // }).then( res => {
+      //     this.results = res.data.result;
+      //   })
+      //   .catch(error => console.log(error))
 
-      function searchString() {
-        let queryString = '';
-
-        if (formData.startDate == formData.endDate) {
-          queryString += `[recordTime,=,${formData.startDate}]`
-        } else {
-          queryString += `[recordTime,>,${formData.startDate}],[recordTime,<,${formData.endDate}]`
-        }
-
-        if (formData.status) {
-          queryString += `,[status,=,${formData.status}]`
-        }
-        if (formData.recordOperator) {
-          queryString += `,[recordOperator,=,${formData.recordOperator}]` //currently bugged
-        }
-        console.log(queryString);
-        return queryString
-      }
-
-      axios.get('api/webuy', {
-        params: {
-          limit: 'all',
-          orderBy: 'datetime',
-          orderMethod: 'desc',
-          searching: searchString(),
-        }
-      }).then( res => {
-          // console.log(res);
-          this.results = res.data.result;
-
-          // for (let result in results) {
-          //   for (let passenger in result.passenger)
-          // }
-          // this.displayPassengers = res.data.result.passenger.concat
-
-          // console.log(this.results);
-        })
-        .catch(error => console.log(error))
-      // axios.get('http://kusakawa.ddns.net:8080/farener/public/api/orders.json', formData);
+// original function end here
     },
     changeToRush(result) {
 
       axios.patch('api/webuy', {
-          id: result._id.$oid,
-          isRush: true,
+        headers: {
+          'Authorization': 'Bearer ' + this.idToken
+        },
+        id: result._id.$oid,
+        isRush: true,
       }).then(alert("加急成功!"))
         .catch(error => console.log(error))
 
     },
     deleteOrder(result, index) {
       this.results.splice(index, 1);
+      console.log(this.idToken)
       axios.delete('api/webuy', {
+        headers: {
+          'Authorization': 'Bearer ' + this.idToken
+        },
         params: {
           id: result._id.$oid,
         }
-      })
+      }).then(alert("訂單已刪除!"))
+        .catch(error => console.log(error))
     },
   },
-  created() {
-    // axios.get('/PNR.json')
-    //   .then( res => console.log(res))
-    //   .catch(error => console.log(error))
-  }
 }
 </script>
 

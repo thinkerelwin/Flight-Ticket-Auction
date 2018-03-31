@@ -39,21 +39,25 @@ export default {
   },
   methods: {
     onSubmit() {
-      axios.post('login', {
-        name: this.username,
-        password: this.password,
-      }).then(res => {
-          console.log("login respond: " + res);
-          // this.$emit('passingAuthInfo', res)
-          this.$store.dispatch('login', {username: this.username, password: this.password})
+      this.$store.dispatch('login', {username: this.username, password: this.password})
 
-          this.username = '';
-          this.password = '';
-        })
-        .catch(error => {
-          console.log(error)
-          this.warningMessage = "name and password aren't matched, please try again!"
-        })
+      this.username = '';
+      this.password = '';
+      // axios.post('login', {
+      //   name: this.username,
+      //   password: this.password,
+      // }).then(res => {
+      //     console.log("login respond: " + res);
+      //     // this.$emit('passingAuthInfo', res)
+      //     this.$store.dispatch('login', {username: this.username, password: this.password})
+      //
+      //     this.username = '';
+      //     this.password = '';
+      //   })
+      //   .catch(error => {
+      //     console.log(error)
+      //     this.warningMessage = "name and password aren't matched, please try again!"
+      //   })
     }
   }
 }

@@ -35,6 +35,11 @@
                 <input type="text" class="form-control" id="extra" v-model="comment">
               </div>
               <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="AA" v-model="flightAA">
+                <label class="form-check-label" for="AA">AA</label>
+                <p>{{flightAA}}</p>
+              </div>
+              <div class="form-check">
                 <input class="form-check-input" type="checkbox" value="" id="emergency" v-model="isRush">
                 <label class="form-check-label" for="emergency">
                   加急票
@@ -64,24 +69,42 @@ export default {
       comment: '',
       passenger: '',
       deadline: '',
+      flight: [],
+      flightAA: false,
+
       isRush: false,
-      recordOperator: '1' // should be take in automatically
+      //recordOperator: '1' // should be take in automatically
+    }
+  },
+  computed: {
+    idToken() {
+      return this.$store.getters.idToken
     }
   },
   methods: {
     submitForm () {
       const formData = {
-
-        flightMsg: this.flightMsg,
-        price: this.price,
-        comment: this.comment,
-        passenger: this.passenger,
-        deadline: this.deadline,
-        isRush: this.isRush,
-        recordOperator: this.recordOperator // should get recordOperator automatically
+        data: {
+          flightMsg: this.flightMsg,
+          price: this.price,
+          comment: this.comment,
+          passenger: this.passenger,
+          deadline: this.deadline,
+          isRush: this.isRush,
+          flight: ["OTHER", "AA", "DL", "UA", "CA", "MU", "CX"]
+          // recordOperator: this.recordOperator
+        }
       }
-      console.log(formData);
-      axios.post('api/webuy', formData)
+      console.log(formData)
+      const authHeader = {
+        headers: {
+          'Authorization': 'Bearer ' + this.idToken
+        }
+      }
+
+      // console.log(this.idToken)
+
+      axios.post('api/webuy', formData, authHeader)
         .then(res => {
           console.log(res);
 
@@ -93,7 +116,6 @@ export default {
           this.isRush = false
         })
         .catch(error => console.log(error))
-
     }
   }
 }
