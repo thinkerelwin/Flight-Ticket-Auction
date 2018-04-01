@@ -156,6 +156,7 @@ export default {
 // original function start here
 
       this.$store.dispatch('queryorder', {dateRange: this.dateRange, status: this.status})
+      console.log(this.results)
       // const formData = {
       //   startDate: this.dateRange[0].toISOString().slice(0, 10),
       //   endDate: this.dateRange[1].toISOString().slice(0 ,10),
@@ -199,15 +200,21 @@ export default {
 // original function end here
     },
     changeToRush(result) {
-
-      axios.patch('api/webuy', {
+      const authHeader = {
         headers: {
           'Authorization': 'Bearer ' + this.idToken
-        },
+        }
+      }
+
+      axios.patch('api/webuy', {
         id: result._id.$oid,
-        isRush: true,
-      }).then(alert("加急成功!"))
-        .catch(error => console.log(error))
+        isRush: 'true',
+      }, authHeader)
+        .then(res => {
+          alert("加急成功!")
+          this.query()
+        } 
+        ).catch(error => console.log(error))
 
     },
     deleteOrder(result, index) {

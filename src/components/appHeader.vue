@@ -12,25 +12,29 @@
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
             <!-- <router-link class="nav-link" to="/new"> -->
+            <template v-if="isFarener">
               <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#PNRmodal">
                 Add PNR
               </button><span class="sr-only">(New)</span>
+            </template>
             <!-- </router-link> -->
           </li>
         </ul>
-        <span class="navbar-text">
-          welcome {{ username }}
-        </span>
-        <form class="form-inline my-2 my-lg-0">
-          <router-link to="/">
-            <i class="fas fa-sign-in-alt"></i>
-          </router-link>
-        </form>
+
+        <template v-if="isSignIn">
+          <span class="navbar-text">
+            welcome, {{ username }}
+          </span>
+          <form class="form-inline my-2 my-lg-0">
+              <span @click="leave()"><i class="fas fa-sign-in-alt"></i></span>
+          </form>
+        </template>
+
       </div>
     </nav>
-
-    <addPNR></addPNR>
-
+    <template v-if="isFarener">
+      <addPNR></addPNR>
+    </template>
   </div>
 </template>
 
@@ -40,11 +44,27 @@ import addPNR from './addPNR.vue'
 export default {
   data () {
     return {
-      username: 'Jason'
+      // username: 'Jason'
+    }
+  },
+  computed: {
+    isFarener() {
+      return this.$store.getters.authType == 'farener'
+    },
+    isSignIn() {
+      return this.$store.getters.idToken !== null
+    },
+    username() {
+      return this.$store.getters.username
     }
   },
   components: {
     'addPNR': addPNR
+  },
+  methods: {
+    leave() {
+      this.$store.dispatch('signOut')
+    }
   }
 }
 
@@ -76,5 +96,8 @@ export default {
     padding-top: 0;
     padding-bottom: 0;
     margin-bottom: 2em;
+  }
+  svg {
+    cursor: pointer;
   }
 </style>

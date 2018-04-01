@@ -34,13 +34,26 @@
                 <label for="extra" class="col-form-label">备注:</label>
                 <input type="text" class="form-control" id="extra" v-model="comment">
               </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="AA" v-model="flightAA">
-                <label class="form-check-label" for="AA">AA</label>
-                <p>{{flightAA}}</p>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="airlineA" value="AA" v-model="flight">
+                <label class="form-check-label" for="airlineA">AA</label>
+                <input class="form-check-input" type="checkbox" id="airlineB" value="DL" v-model="flight">
+                <label class="form-check-label" for="airlineB">DL</label>
+                <input class="form-check-input" type="checkbox" id="airlineC" value="UA" v-model="flight">
+                <label class="form-check-label" for="airlineC">UA</label>
+                <input class="form-check-input" type="checkbox" id="airlineD" value="CA" v-model="flight">
+                <label class="form-check-label" for="airlineD">CA</label>
+                <input class="form-check-input" type="checkbox" id="airlineE" value="MU" v-model="flight">
+                <label class="form-check-label" for="airlineE">MU</label>
+                <input class="form-check-input" type="checkbox" id="airlineF" value="CX" v-model="flight">
+                <label class="form-check-label" for="airlineF">CX</label>
+                <input class="form-check-input" type="checkbox" id="airlineG" value="OTHER" v-model="flight">
+                <label class="form-check-label" for="airlineG">OTHER</label>
+                <!-- <p>{{flight}}</p> -->
               </div>
               <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="emergency" v-model="isRush">
+                <p>{{typeof isRush}}</p>
+                <input class="form-check-input" type="checkbox" value="'true'" id="emergency" v-model="isRush">
                 <label class="form-check-label" for="emergency">
                   加急票
                 </label>
@@ -50,7 +63,7 @@
 
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">清空PNR</button>
-            <button type="button" class="btn btn-primary" @click="submitForm" data-dismiss="modal">提交</button>
+            <button type="button" class="btn btn-primary" @click="submitForm()" data-dismiss="modal">提交</button>
           </div>
         </div>
       </div>
@@ -70,8 +83,6 @@ export default {
       passenger: '',
       deadline: '',
       flight: [],
-      flightAA: false,
-
       isRush: false,
       //recordOperator: '1' // should be take in automatically
     }
@@ -79,21 +90,25 @@ export default {
   computed: {
     idToken() {
       return this.$store.getters.idToken
-    }
+    },
+    dateRange() {
+      return this.$store.getters.dateRange
+    },
+    status() {
+      return this.$store.getters.status
+    },
   },
   methods: {
     submitForm () {
       const formData = {
-        data: {
-          flightMsg: this.flightMsg,
-          price: this.price,
-          comment: this.comment,
-          passenger: this.passenger,
-          deadline: this.deadline,
-          isRush: this.isRush,
-          flight: ["OTHER", "AA", "DL", "UA", "CA", "MU", "CX"]
-          // recordOperator: this.recordOperator
-        }
+        flightMsg: this.flightMsg,
+        price: this.price,
+        comment: this.comment,
+        passenger: this.passenger,
+        deadline: this.deadline,
+        isRush: this.isRush.toString(),
+        flight: this.flight
+        // recordOperator: this.recordOperator
       }
       console.log(formData)
       const authHeader = {
@@ -114,6 +129,9 @@ export default {
           this.passenger = '';
           this.deadline = '';
           this.isRush = false
+
+          this.$store.dispatch('queryorder', {dateRange: this.dateRange, status: this.status})
+          // console.log(this.dateRange ,this.status)
         })
         .catch(error => console.log(error))
     }

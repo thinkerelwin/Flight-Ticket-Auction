@@ -3,70 +3,119 @@ import Vuex from 'vuex'
 import axios from './axios-auth'
 import normalAxios from 'axios'
 
+import router from './router/index'
+
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
     idToken: null,
-    userId: null,
+    authType: null,
+    username: null,
     availability: null,
     results: {},
+    dateRange: null,
+    status: null,
+    warningMessage: null
   },
   getters: {
+    authType (state) {
+      return state.authType
+    },
+    username (state) {
+      return state.username
+    },
     results: state => {
-      return state.results;
+      return state.results
     },
     idToken: state => {
-      return state.idToken;
+      return state.idToken
+    },
+    dateRange: state => {
+      return state.dateRange
+    },
+    status: state => {
+      return state.status
+    },
+    warningMessage: state => {
+      return state.warningMessage
     }
   },
   mutations: {
     authUser (state, userData) {
       state.idToken = userData.token
-      state.userId = userData.Id
+      state.authType = userData.authType
+      state.username = userData.username
       state.availability = userData.flightChoice
     },
     queryResult (state, orderData) {
       state.results = orderData.orderResults
+    },
+    queryFilter (state, filterCondition) {
+      state.dateRange = filterCondition.dateRange
+      state.status = filterCondition.status
+    },
+    clearAuthData (state) {
+      state.idToken = null
+      state.authType = null
+      state.username = null
+      state.availability = null
+      state.results = null
     }
   },
   actions: {
-    login({commit}, authData) {
-        axios.post('login', {
-          name: authData.username,
-          password: authData.password,
-        }).then(res => {
-            console.log('login respond: ' + res);
-            // this.$emit('passingAuthInfo', res)
-            commit('authUser', {
-              token: res.data.token,
-              Id: res.data.userdata._id,
-              flightChoice: res.data.userdata.flight
-            })
-          })
-          .catch(error => {
-            console.log(error)
-            // this.warningMessage = "name and password aren't matched, please try again!"
-          })
+    login ({commit, state}, authData) {
+      axios.post('login', {
+        name: authData.username,
+        password: authData.password
+
+      }).then(res => {
+        console.log(res)
+        this.username = ''
+        this.password = ''
+        // this.$emit('passingAuthInfo', res)
+        commit('authUser', {
+          token: res.data.token,
+          authType: res.data.userdata.auth,
+          username: res.data.userdata.cooperation,
+          flightChoice: res.data.userdata.flight
+        })
+        router.replace('/')
+      }).catch(error => {
+        console.log(error)
+        state.warningMessage = "name and password aren't matched, please try again!"
+      })
     },
-    storeUser ({commit}, userData) {
-      // normalAxios.
+    signOut ({commit}) {
+      commit('clearAuthData')
+      router.replace('/login')
     },
     queryorder ({commit, state}, userInput) {
+      if (!userInput.dateRange) {
+        let defaultStartDate = new Date()
+        let defaultEndDate = new Date()
+        userInput.dateRange = [defaultStartDate, defaultEndDate]
+      }
+      console.log(userInput.dateRange)
+      commit('queryFilter', {
+        dateRange: userInput.dateRange,
+        status: userInput.status
+      })
 
       const formData = {
         startDate: userInput.dateRange[0].toISOString().slice(0, 10),
-        endDate: userInput.dateRange[1].toISOString().slice(0 ,10),
-        status: userInput.status,
+        endDate: userInput.dateRange[1].toISOString().slice(0, 10),
+        status: userInput.status
+        // flight: ['AA', 'DL']
         // recordOperator: this.recordOperator
       }
 
-      console.log(formData);
+      console.log(formData)
 
-      function searchString() {
-        let queryString = '';
+      function searchString () {
+        let queryString = ''
 
-        if (formData.startDate == formData.endDate) {
+        if (formData.startDate === formData.endDate) {
           queryString += `[recordTime,=,${formData.startDate}]`
         } else {
           queryString += `[recordTime,>,${formData.startDate}],[recordTime,<,${formData.endDate}]`
@@ -78,7 +127,7 @@ export default new Vuex.Store({
         // if (formData.recordOperator) {
         //   queryString += `,[recordOperator,=,${formData.recordOperator}]` //currently bugged
         // }
-        console.log(queryString);
+        console.log(queryString)
         return queryString
       }
 
@@ -90,16 +139,16 @@ export default new Vuex.Store({
           limit: 'all',
           orderBy: 'datetime',
           orderMethod: 'desc',
-          searching: searchString(),
+          searching: searchString()
         }
-      }).then( res => {
-          // this.results = res.data.result;  //how to pass this.results info back to showList.vue?
-          commit('queryResult', {
-            orderResults: res.data.result,
-          })
-          console.log(state.results)
+      }).then(res => {
+        // this.results = res.data.result;  //how to pass this.results info back to showList.vue?
+        commit('queryResult', {
+          orderResults: res.data.result
         })
-        .catch(error => console.log(error))
+        console.log(state.results)
+
+      }).catch(error => console.log(error))
     }
   },
 })

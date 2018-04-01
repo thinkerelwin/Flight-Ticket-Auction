@@ -11,78 +11,156 @@
           </div>
 
           <div class="modal-body">
-            <form>
-              <div class="form-group">
-                  <label for="specific-flightRoute" class="col-form-label">PNR航段信息:(Only farener can revise)</label>
-                  <textarea type="textarea" class="form-control" id="specific-flightRoute" v-model="result.flightMsg" rows="4" readonly></textarea>
-              </div>
-              <div class="form-group row">
-                <div class="col-6">
-                  <label for="specific-price" class="col-form-label">总价:</label>
-                  <input type="text" class="form-control" id="specific-price" v-model="result.price">
+            <template v-if="isFarener"> 
+              <form>
+                <div class="form-group">
+                    <label for="specific-flightRoute" class="col-form-label">PNR航段信息:(Only farener can revise)</label>
+                    <textarea type="textarea" class="form-control" id="specific-flightRoute" v-model="result.flightMsg" rows="4"></textarea>
                 </div>
-              </div>
-              <div class="form-group row">
-                <div class="col-6">
-                  <label for="recordLocator" class="col-form-label">订位代码:</label>
-                  <input type="text" class="form-control" id="recordLocator" v-model="result.recordlocator">
-                </div>
-                <div class="col-6">
-                  <label for="specific-dead-line" class="col-form-label">最晚出票时间:</label>
-                  <!-- <input type="text" class="form-control" id="specific-dead-line" v-model="result.deadline" placeholder="ex: 2018-03-27" readonly> -->
-                  <p>{{result.deadline}}</p>
-                </div>
-              </div>
-              <div class="form-group row" v-for="passenger in result.passenger">
-                <div class="col-6">
-                  <label for="specific-passengers" class="col-form-label">乘机人:</label>
-                  <!-- <input type="text" class="form-control" id="specific-passengers" v-model="passenger['name']" readonly> -->
-                  <p>{{passenger['name']}}</p>
-                </div>
-                <div class="col-6">
-                  <label for="specific-ticketNumber" class="col-form-label">票号:</label>
-                  <input type="text" class="form-control" id="specific-ticketNumber" v-model="passenger['ticketnumber']">
-                </div>
-              </div>
-              <div class="form-group row">
-                <div class="offset-6 col-6">
-                  <button type="button" class="btn btn-success" @click="confirmTicket(result)" data-dismiss="modal">确认出票</button>
-                </div>
-              </div>
-              <div class="form-group row">
-                <!-- <div class="col-6"> -->
-                  <label for="specific-commitprice" class=" col-6 col-form-label">可出票价格 :</label>
+                <div class="form-group row">
                   <div class="col-6">
-                    <input type="text" class="form-control" id="specific-commitprice" v-model="commitPrice">
+                    <label for="specific-price" class="col-form-label">总价:</label>
+                    <input type="text" class="form-control" id="specific-price" v-model="result.price">
                   </div>
-                <!-- </div> -->
-              </div>
-              <div class="form-group row">
-                <div class="offset-6 col-6">
-                  <button type="button" class="btn btn-warning" @click="negotiatePrice(result)" data-dismiss="modal" >暂不能出票</button>
                 </div>
-              </div>
-              <div class="form-group">
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" id="Position" value="没有舱位" v-model="rejectReason">
-                  <label class="form-check-label" for="Position">没有舱位</label>
+                <div class="form-group row">
+                  <div class="col-6">
+                    <label for="recordLocator" class="col-form-label">订位代码:</label>
+                    <p>{{result.recordLocator}}</p>
+                  </div>
+                  <div class="col-6">
+                    <label for="specific-dead-line" class="col-form-label">最晚出票时间:</label>
+                    <!-- <input type="text" class="form-control" id="specific-dead-line" v-model="result.deadline" placeholder="ex: 2018-03-27" readonly> -->
+                    <p>{{result.deadline}}</p>
+                  </div>
                 </div>
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" id="Price" value="没有票价" v-model="rejectReason">
-                  <label class="form-check-label" for="Price">没有票价</label>
+                <div class="form-group row" v-for="passenger in result.passenger">
+                  <div class="col-6">
+                    <label for="specific-passengers" class="col-form-label">乘机人:</label>
+                    <!-- <input type="text" class="form-control" id="specific-passengers" v-model="passenger['name']" readonly> -->
+                    <p>{{passenger['name']}}</p>
+                  </div>
+                  <div class="col-6">
+                    <label for="specific-ticketNumber" class="col-form-label">票号:</label>
+                    <p>{{passenger['ticketnumber']}}</p>
+                  </div>
                 </div>
-              </div>
-              <div class="form-group row">
-                <div class="offset-6 col-6">
-                  <button type="button" class="btn btn-danger" @click="cancelOrder(result)" data-dismiss="modal">拒绝出票</button>
+                <div class="form-group row">
+                  <div class="offset-6 col-6">
+                    <button type="button" class="btn btn-success" @click="confirmTicket(result)" data-dismiss="modal" disabled>确认出票</button>
+                  </div>
                 </div>
-              </div>
-              <div class="form-group message-board">
-                <p v-for="log in result.logs">
-                  记录时间: {{log.time}}  操作人: {{log.operator}}  <b>描述: </b><span v-for="specificLog in log.operation">{{specificLog}}, </span>
-                </p>
-              </div>
-            </form>
+                <div class="form-group row">
+                  <!-- <div class="col-6"> -->
+                    <label for="specific-commitprice" class=" col-6 col-form-label">可出票价格 :</label>
+                    <div class="col-6">
+                      <input type="text" class="form-control" id="specific-commitprice" v-model="commitPrice">
+                    </div>
+                  <!-- </div> -->
+                </div>
+                <div class="form-group row">
+                  <div class="offset-6 col-6">
+                    <button type="button" class="btn btn-warning" @click="negotiatePrice(result)" data-dismiss="modal" disabled>暂不能出票</button>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" id="Position" value="没有舱位" v-model="rejectReason">
+                    <label class="form-check-label" for="Position">没有舱位</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" id="Price" value="没有票价" v-model="rejectReason">
+                    <label class="form-check-label" for="Price">没有票价</label>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <div class="offset-6 col-6">
+                    <button type="button" class="btn btn-danger" @click="cancelOrder(result)" data-dismiss="modal" disabled>拒绝出票</button>
+                  </div>
+                </div>
+                <div class="form-group message-board">
+                  <p v-for="log in result.logs">
+                    记录时间: {{log.time}}  操作人: {{log.operator}}  <b>描述: </b><span v-for="specificLog in log.operation">{{specificLog}}, </span>
+                  </p>
+                </div>
+              </form>
+            </template>
+
+            <template v-if="!isFarener"> 
+              <form>
+                <div class="form-group">
+                    <label for="specific-flightRoute" class="col-form-label">PNR航段信息:(Only farener can revise)</label>
+                    <p>{{result.flightMsg}}</p>
+                </div>
+                <div class="form-group row">
+                  <div class="col-6">
+                    <label for="specific-price" class="col-form-label">总价:</label>
+                    <p>{{result.price}}</p>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <div class="col-6">
+                    <label for="recordLocator" class="col-form-label">订位代码:</label>
+                    <input type="text" class="form-control" id="recordLocator" v-model="result.recordLocator">
+                  </div>
+                  <div class="col-6">
+                    <label for="specific-dead-line" class="col-form-label">最晚出票时间:</label>
+                    <!-- <input type="text" class="form-control" id="specific-dead-line" v-model="result.deadline" placeholder="ex: 2018-03-27" readonly> -->
+                    <p>{{result.deadline}}</p>
+                  </div>
+                </div>
+                <div class="form-group row" v-for="passenger in result.passenger">
+                  <div class="col-6">
+                    <label for="specific-passengers" class="col-form-label">乘机人:</label>
+                    <!-- <input type="text" class="form-control" id="specific-passengers" v-model="passenger['name']" readonly> -->
+                    <p>{{passenger['name']}}</p>
+                  </div>
+                  <div class="col-6">
+                    <label for="specific-ticketNumber" class="col-form-label">票号:</label>
+                    <input type="text" class="form-control" id="specific-ticketNumber" v-model="passenger['ticketnumber']">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <div class="offset-6 col-6">
+                    <button type="button" class="btn btn-success" @click="confirmTicket(result)" data-dismiss="modal">确认出票</button>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <!-- <div class="col-6"> -->
+                    <label for="specific-commitprice" class=" col-6 col-form-label">可出票价格 :</label>
+                    <div class="col-6">
+                      <input type="text" class="form-control" id="specific-commitprice" v-model="commitPrice">
+                    </div>
+                  <!-- </div> -->
+                </div>
+                <div class="form-group row">
+                  <div class="offset-6 col-6">
+                    <button type="button" class="btn btn-warning" @click="negotiatePrice(result)" data-dismiss="modal" >暂不能出票</button>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" id="Position" value="没有舱位" v-model="rejectReason">
+                    <label class="form-check-label" for="Position">没有舱位</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" id="Price" value="没有票价" v-model="rejectReason">
+                    <label class="form-check-label" for="Price">没有票价</label>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <div class="offset-6 col-6">
+                    <button type="button" class="btn btn-danger" @click="cancelOrder(result)" data-dismiss="modal">拒绝出票</button>
+                  </div>
+                </div>
+                <div class="form-group message-board">
+                  <p v-for="log in result.logs">
+                    记录时间: {{log.time}}  操作人: {{log.operator}}  <b>描述: </b><span v-for="specificLog in log.operation">{{specificLog}}, </span>
+                  </p>
+                </div>
+              </form>
+            </template>
+            
           </div>
         </div>
       </div>
@@ -111,9 +189,18 @@ export default {
     }
   },
   computed: {
+    isFarener() {
+      return this.$store.getters.authType == 'farener'
+    },
     idToken() {
       return this.$store.getters.idToken
-    }
+    },
+    dateRange() {
+      return this.$store.getters.dateRange
+    },
+    status() {
+      return this.$store.getters.status
+    },
   },
   methods: {
     confirmTicket (result) {
@@ -127,10 +214,12 @@ export default {
           id: result._id.$oid,
           flightMsg: result.flightMsg,
           price: result.price,
-          recordlocator: result.recordlocator,
+          recordLocator: result.recordLocator,
           status: "已出票",
           passenger: result.passenger,
-      }, authHeader)
+      }, authHeader).then( res => {
+        this.$store.dispatch('queryorder', {dateRange: this.dateRange, status: this.status})
+      }).catch(error => console.log(error))
     },
     negotiatePrice (result) {
       const authHeader = {
@@ -147,7 +236,9 @@ export default {
           id: result._id.$oid,
           status: "待處理",
           commitprice: this.commitPrice,
-      }, authHeader)
+      }, authHeader).then( res => {
+        this.$store.dispatch('queryorder', {dateRange: this.dateRange, status: this.status})
+      }).catch(error => console.log(error))
     },
     cancelOrder(result) {
       const authHeader = {
@@ -163,7 +254,7 @@ export default {
           comment: this.rejectReason,
 
       }, authHeader).then( res => {
-        this.results = res.data.result;
+        this.$store.dispatch('queryorder', {dateRange: this.dateRange, status: this.status})
       }).catch(error => console.log(error))
     },
   }

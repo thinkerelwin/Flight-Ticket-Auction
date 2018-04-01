@@ -1,6 +1,6 @@
 <template>
   <div class="container loginForm">
-    <!-- <form class="" action="" method="get"> -->
+    <form @submit.prevent="onSubmit">
       <fieldset>
         <legend>用户登录</legend>
         <div class="input-group mb-3">
@@ -16,10 +16,10 @@
           <input type="password" class="form-control" v-model="password" placeholder="Password" aria-label="Username" aria-describedby="basic-addon1">
         </div>
       </fieldset>
-      <router-link to="/"><button class="btn btn-primary btn-block" @click="onSubmit()">登录</button></router-link>
+      <button class="btn btn-primary btn-block">登录</button>
       <p>{{warningMessage}}</p>
       <!-- <p>{{ eventBus.name }}</p> -->
-    <!-- </form> -->
+    </form>
   </div>
 </template>
 
@@ -34,15 +34,17 @@ export default {
       password: '',
       // userdata: {},
       // token: '',
-      warningMessage: '',
+      // warningMessage: '',
+    }
+  },
+  computed: {
+    warningMessage() {
+      return this.$store.getters.warningMessage
     }
   },
   methods: {
     onSubmit() {
       this.$store.dispatch('login', {username: this.username, password: this.password})
-
-      this.username = '';
-      this.password = '';
       // axios.post('login', {
       //   name: this.username,
       //   password: this.password,
