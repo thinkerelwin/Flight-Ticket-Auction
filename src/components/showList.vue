@@ -4,8 +4,6 @@
 
       <div class="input-group col-md-4 mb-3">
         <date-picker class="datechoice" v-model="dateRange" range :shortcuts="shortcuts" placeholder="开始日期-结束日期" required></date-picker>
-        <p>{{dateRange}}</p>
-        <p>{{new Date()}}</p>
       </div>
       <div class="input-group col-md-3 mb-3">
         <div class="input-group-prepend">
@@ -19,17 +17,21 @@
           <option value="已取消">已取消</option>
         </select>
       </div>
-      <div class="input-group col-md-3 mb-3">
+      <!-- <p>{{new Date(dateRange[0].getTime() + 3600 * 8000)}}</p> -->
+      <!-- <p>{{dateRange}}</p>
+      <p>{{new Date()}}</p> -->
+      
+      <!-- <div class="input-group col-md-3 mb-3">
         <div class="input-group-prepend">
           <label class="input-group-text" for="operator">人员</label>
         </div>
-        <!-- <select class="custom-select" id="operator" v-model="recordOperator">
+        <select class="custom-select" id="operator" v-model="recordOperator">
           <option value="" selected>Choose...</option>
           <option value="1">One</option>
           <option value="2">Two</option>
           <option value="3">Three</option>
-        </select> -->
-      </div>
+        </select>
+      </div> -->
       <div class="col-md-2">
         <button class="btn btn-primary" type="button" name="search" @click="query()">查询</button>
       </div>
@@ -47,7 +49,7 @@
             <!-- <th scope="col">操作人员</th> -->
             <th scope="col">状态</th>
             <th scope="col">详细</th>
-            <th scope="col">操作</th>
+            <th v-if="isFarener" scope="col">操作</th>
           </tr>
         </thead>
         <tbody>
@@ -65,7 +67,7 @@
               <button class="btn btn-info" data-toggle="modal" :data-target="'#modal' + index">详细</button>
               <orderDetails :result="result" :index="index"></orderDetails>
             </td>
-            <td>
+            <td v-if="isFarener">
               <button class="btn btn-danger addspace" @click="deleteOrder(result, index)">删除</button>
               <button v-if="result.isRush == 'false'" class="btn btn-warning" @click="changeToRush(result)">加急</button>
               <!-- <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#confirmDelete">
@@ -132,6 +134,9 @@ export default {
     },
     idToken() {
       return this.$store.getters.idToken
+    },
+    isFarener() {
+      return this.$store.getters.authType == 'farener'
     }
   },
   methods: {
@@ -213,7 +218,7 @@ export default {
         .then(res => {
           alert("加急成功!")
           this.query()
-        } 
+        }
         ).catch(error => console.log(error))
 
     },

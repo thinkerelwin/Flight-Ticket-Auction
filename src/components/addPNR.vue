@@ -128,6 +128,7 @@ export default {
           this.comment = '';
           this.passenger = '';
           this.deadline = '';
+          this.flight = [];
           this.isRush = false
 
           this.$store.dispatch('queryorder', {dateRange: this.dateRange, status: this.status})

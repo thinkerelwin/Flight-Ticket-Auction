@@ -14,17 +14,9 @@ export default {
   components: {
     'appHeader': appHeader
   },
-  // data() {
-  //   return {
-  //     authdata: '',
-  //     id: null,
-  //     name: '',
-  //     password: '',
-  //     cooperation: '',
-  //     auth: '',
-  //     token: '',
-  //   }
-  // }
+  created() {
+    this.$store.dispatch('tryAutoLogIn')
+  }
 }
 
 </script>

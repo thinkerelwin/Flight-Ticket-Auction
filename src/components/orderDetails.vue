@@ -11,10 +11,10 @@
           </div>
 
           <div class="modal-body">
-            <template v-if="isFarener"> 
+            <template v-if="isFarener">
               <form>
                 <div class="form-group">
-                    <label for="specific-flightRoute" class="col-form-label">PNR航段信息:(Only farener can revise)</label>
+                    <label for="specific-flightRoute" class="col-form-label">PNR航段信息:</label>
                     <textarea type="textarea" class="form-control" id="specific-flightRoute" v-model="result.flightMsg" rows="4"></textarea>
                 </div>
                 <div class="form-group row">
@@ -25,19 +25,17 @@
                 </div>
                 <div class="form-group row">
                   <div class="col-6">
-                    <label for="recordLocator" class="col-form-label">订位代码:</label>
-                    <p>{{result.recordLocator}}</p>
+                    <label for="specific-dead-line" class="col-form-label">最晚出票时间:</label>
+                    <p>{{result.deadline}}</p>
                   </div>
                   <div class="col-6">
-                    <label for="specific-dead-line" class="col-form-label">最晚出票时间:</label>
-                    <!-- <input type="text" class="form-control" id="specific-dead-line" v-model="result.deadline" placeholder="ex: 2018-03-27" readonly> -->
-                    <p>{{result.deadline}}</p>
+                    <label for="recordLocator" class="col-form-label">订位代码:</label>
+                    <p>{{result.recordLocator}}</p>
                   </div>
                 </div>
                 <div class="form-group row" v-for="passenger in result.passenger">
                   <div class="col-6">
                     <label for="specific-passengers" class="col-form-label">乘机人:</label>
-                    <!-- <input type="text" class="form-control" id="specific-passengers" v-model="passenger['name']" readonly> -->
                     <p>{{passenger['name']}}</p>
                   </div>
                   <div class="col-6">
@@ -45,18 +43,18 @@
                     <p>{{passenger['ticketnumber']}}</p>
                   </div>
                 </div>
-                <div class="form-group row">
+                <!-- <div class="form-group row">
                   <div class="offset-6 col-6">
                     <button type="button" class="btn btn-success" @click="confirmTicket(result)" data-dismiss="modal" disabled>确认出票</button>
                   </div>
                 </div>
                 <div class="form-group row">
-                  <!-- <div class="col-6"> -->
+                  <div class="col-6">
                     <label for="specific-commitprice" class=" col-6 col-form-label">可出票价格 :</label>
                     <div class="col-6">
                       <input type="text" class="form-control" id="specific-commitprice" v-model="commitPrice">
                     </div>
-                  <!-- </div> -->
+                  </div>
                 </div>
                 <div class="form-group row">
                   <div class="offset-6 col-6">
@@ -77,6 +75,25 @@
                   <div class="offset-6 col-6">
                     <button type="button" class="btn btn-danger" @click="cancelOrder(result)" data-dismiss="modal" disabled>拒绝出票</button>
                   </div>
+                </div> -->
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="checkbox" id="airlineA" value="AA" v-model="result.flight">
+                  <label class="form-check-label" for="airlineA">AA</label>
+                  <input class="form-check-input" type="checkbox" id="airlineB" value="DL" v-model="result.flight">
+                  <label class="form-check-label" for="airlineB">DL</label>
+                  <input class="form-check-input" type="checkbox" id="airlineC" value="UA" v-model="result.flight">
+                  <label class="form-check-label" for="airlineC">UA</label>
+                  <input class="form-check-input" type="checkbox" id="airlineD" value="CA" v-model="result.flight">
+                  <label class="form-check-label" for="airlineD">CA</label>
+                  <input class="form-check-input" type="checkbox" id="airlineE" value="MU" v-model="result.flight">
+                  <label class="form-check-label" for="airlineE">MU</label>
+                  <input class="form-check-input" type="checkbox" id="airlineF" value="CX" v-model="result.flight">
+                  <label class="form-check-label" for="airlineF">CX</label>
+                  <input class="form-check-input" type="checkbox" id="airlineG" value="OTHER" v-model="result.flight">
+                  <label class="form-check-label" for="airlineG">OTHER</label>
+                </div>
+                <div>
+                  <button class="btn btn-success center-button" type="button" @click="reviseTicket(result)" data-dismiss="modal">修改订单</button>
                 </div>
                 <div class="form-group message-board">
                   <p v-for="log in result.logs">
@@ -86,10 +103,10 @@
               </form>
             </template>
 
-            <template v-if="!isFarener"> 
+            <template v-if="!isFarener">
               <form>
                 <div class="form-group">
-                    <label for="specific-flightRoute" class="col-form-label">PNR航段信息:(Only farener can revise)</label>
+                    <label for="specific-flightRoute" class="col-form-label">PNR航段信息:</label>
                     <p>{{result.flightMsg}}</p>
                 </div>
                 <div class="form-group row">
@@ -100,13 +117,13 @@
                 </div>
                 <div class="form-group row">
                   <div class="col-6">
-                    <label for="recordLocator" class="col-form-label">订位代码:</label>
-                    <input type="text" class="form-control" id="recordLocator" v-model="result.recordLocator">
-                  </div>
-                  <div class="col-6">
                     <label for="specific-dead-line" class="col-form-label">最晚出票时间:</label>
                     <!-- <input type="text" class="form-control" id="specific-dead-line" v-model="result.deadline" placeholder="ex: 2018-03-27" readonly> -->
                     <p>{{result.deadline}}</p>
+                  </div>
+                  <div class="col-6">
+                    <label for="recordLocator" class="col-form-label">订位代码:</label>
+                    <input type="text" class="form-control" id="recordLocator" v-model="result.recordLocator">
                   </div>
                 </div>
                 <div class="form-group row" v-for="passenger in result.passenger">
@@ -160,7 +177,7 @@
                 </div>
               </form>
             </template>
-            
+
           </div>
         </div>
       </div>
@@ -168,22 +185,12 @@
 </template>
 
 <script>
-// $('#startDate').datepicker();
 import axios from 'axios'
 
 export default {
   props: ['result', 'index'],
   data () {
     return {
-      // flightMsg: '',
-      // price: '',
-      // comment: '',
-      // passenger: '',
-      // deadline: '',
-      // isRush: false,
-      // recordOperator: '1',
-      // ticketnumber: null,
-      // commitprice: null,
       rejectReason: null,
       commitPrice: null,
     }
@@ -203,7 +210,7 @@ export default {
     },
   },
   methods: {
-    confirmTicket (result) {
+    reviseTicket (result) {
       const authHeader = {
         headers: {
           'Authorization': 'Bearer ' + this.idToken
@@ -214,7 +221,27 @@ export default {
           id: result._id.$oid,
           flightMsg: result.flightMsg,
           price: result.price,
+          flight: result.flight,
+          // recordLocator: result.recordLocator,
+          // status: "已出票",
+          // passenger: result.passenger,
+      }, authHeader).then( res => {
+        this.$store.dispatch('queryorder', {dateRange: this.dateRange, status: this.status})
+      }).catch(error => console.log(error))
+    },
+    confirmTicket (result) {
+      const authHeader = {
+        headers: {
+          'Authorization': 'Bearer ' + this.idToken
+        }
+      }
+
+      axios.patch('api/webuy', {
+          id: result._id.$oid,
+          // flightMsg: result.flightMsg,
+          // price: result.price,
           recordLocator: result.recordLocator,
+          // commitprice: result.commitprice,
           status: "已出票",
           passenger: result.passenger,
       }, authHeader).then( res => {
@@ -234,8 +261,9 @@ export default {
         //   passenger: [{"name": "elwin","ticketNumber": "123123"}, {"name": "kwan"}]
         // }
           id: result._id.$oid,
-          status: "待處理",
+          recordLocator: result.recordLocator,
           commitprice: this.commitPrice,
+          status: "待處理",
       }, authHeader).then( res => {
         this.$store.dispatch('queryorder', {dateRange: this.dateRange, status: this.status})
       }).catch(error => console.log(error))
@@ -274,5 +302,9 @@ export default {
     padding: 5px;
     margin-bottom: 0;
     font-size: 14px;
+  }
+  .center-button {
+    display: block;
+    margin: 10px auto;
   }
 </style>

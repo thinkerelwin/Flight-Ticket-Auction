@@ -25,8 +25,13 @@
           <span class="navbar-text">
             welcome, {{ username }}
           </span>
+          <form v-if="isFarener" class="form-inline my-2 my-lg-0">
+            <router-link class="nav-link" to="/signup">
+              <i class="fas fa-user-plus"></i>
+            </router-link>
+          </form>
           <form class="form-inline my-2 my-lg-0">
-              <span @click="leave()"><i class="fas fa-sign-in-alt"></i></span>
+            <a class="nav-link" @click="leave()"><i class="fas fa-sign-in-alt"></i></a>
           </form>
         </template>
 
@@ -73,7 +78,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
   .header-outer {
-    /* background: lightblue url("../assets/header.jpg") no-repeat fixed center; */
+
   }
   img {
     height: 2em;
@@ -81,16 +86,18 @@ export default {
   span {
     padding-right: 0.5em;
   }
-  .fa-sign-in-alt {
+  .fa-sign-in-alt,
+  .fa-user-plus {
     font-size: 1.8em;
-    /* color: grey; */
+  }
+  .fa-sign-in-alt {
+    color: #007bff;
   }
   .nav-item {
     font-size: 1.3em;
   }
   .nav-item svg {
     margin-right: 0.35em;
-    /* font-size: 1.2em; */
   }
   nav {
     padding-top: 0;
@@ -100,4 +107,5 @@ export default {
   svg {
     cursor: pointer;
   }
+
 </style>
