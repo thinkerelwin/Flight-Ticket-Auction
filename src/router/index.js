@@ -17,7 +17,7 @@ export default new Router({
       name: 'showList',
       component: showList,
       beforeEnter (to, from, next) {
-        console.log('beforeEnter Works: ' + store.state.idToken)
+
         if (store.state.idToken) {
           next()
         } else {

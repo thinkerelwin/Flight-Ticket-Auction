@@ -29,11 +29,11 @@ axios.defaults.baseURL = 'http://kusakawa.ddns.net:8080/farener/public/'
 axios.defaults.headers.get['Accepts'] = 'application/json'
 
 const reqInterceptor = axios.interceptors.request.use(config => {
-  console.log('Request Interceptor', config)
+  // console.log('Request Interceptor', config)
   return config
 })
 const resInterceptor = axios.interceptors.response.use(res => {
-  console.log('Response Interceptor', res)
+  // console.log('Response Interceptor', res)
   return res
 })
 

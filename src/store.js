@@ -76,7 +76,7 @@ export default new Vuex.Store({
         password: authData.password
 
       }).then(res => {
-        console.log(res)
+        // console.log(res)
         this.username = ''
         this.password = ''
         // this.$emit('passingAuthInfo', res)
@@ -139,14 +139,14 @@ export default new Vuex.Store({
           'Authorization': 'Bearer ' + state.idToken
         }
       }
-      axios.post('http://kusakawa.ddns.net:8080/farener/public/api/makeUser', {
+      axios.post('http://kusakawa.ddns.net:8080/farener/public/api/user', {
         name: authData.username,
         password: authData.password,
         auth: authData.auth,
         flight: authData.flight,
         cooperation: authData .cooperation
       }, authHeader).then(res => {
-        console.log(res)
+        // console.log(res)
         // this.username = ''
         // this.password = ''
         alert(`account ${authData.username} is created!`)
@@ -173,8 +173,8 @@ export default new Vuex.Store({
         dateRange: [revisedStartDate, revisedStartDate],
         status: userInput.status
       })
-      console.log(userInput.dateRange)
-      console.log([revisedStartDate, revisedStartDate])
+      // console.log(userInput.dateRange)
+      // console.log([revisedStartDate, revisedStartDate])
 
       const formData = {
         startDate: revisedStartDate.toISOString().slice(0, 10),
@@ -184,7 +184,7 @@ export default new Vuex.Store({
         // recordOperator: this.recordOperator
       }
 
-      console.log(formData)
+      // console.log(formData)
 
       function searchString () {
         let queryString = ''
@@ -201,7 +201,7 @@ export default new Vuex.Store({
         // if (formData.recordOperator) {
         //   queryString += `,[recordOperator,=,${formData.recordOperator}]` //currently bugged
         // }
-        console.log(queryString)
+        // console.log(queryString)
         return queryString
       }
 

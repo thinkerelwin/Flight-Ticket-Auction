@@ -52,7 +52,6 @@
                 <!-- <p>{{flight}}</p> -->
               </div>
               <div class="form-check">
-                <p>{{typeof isRush}}</p>
                 <input class="form-check-input" type="checkbox" value="'true'" id="emergency" v-model="isRush">
                 <label class="form-check-label" for="emergency">
                   加急票

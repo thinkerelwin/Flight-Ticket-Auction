@@ -76,7 +76,7 @@
                     <button type="button" class="btn btn-danger" @click="cancelOrder(result)" data-dismiss="modal" disabled>拒绝出票</button>
                   </div>
                 </div> -->
-                <div class="form-check form-check-inline">
+                <div class="form-check form-check-inline margin-right">
                   <input class="form-check-input" type="checkbox" id="airlineA" value="AA" v-model="result.flight">
                   <label class="form-check-label" for="airlineA">AA</label>
                   <input class="form-check-input" type="checkbox" id="airlineB" value="DL" v-model="result.flight">
@@ -306,5 +306,8 @@ export default {
   .center-button {
     display: block;
     margin: 10px auto;
+  }
+  .margin-right label{
+    margin-right: 5px;
   }
 </style>

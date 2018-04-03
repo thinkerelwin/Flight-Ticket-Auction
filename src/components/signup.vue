@@ -19,7 +19,7 @@
           <div class="input-group-prepend">
             <span class="input-group-text"><i class="fas fa-building"></i></span>
           </div>
-          <input type="text" class="form-control" v-model="cooperation" placeholder="company name" aria-label="company name" aria-describedby="basic-addon1">
+          <input type="text" class="form-control" v-model="cooperation" placeholder="Nick name" aria-label="company name" aria-describedby="basic-addon1">
 
         </div>
         <!-- <div class="form-row">

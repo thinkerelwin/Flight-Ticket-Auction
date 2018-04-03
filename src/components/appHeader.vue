@@ -25,7 +25,7 @@
           <span class="navbar-text">
             welcome, {{ username }}, Orders availabe to you from: 
             <template v-for="flight in flightsAvailable">
-              {{flight}} 
+              {{ flight }} 
             </template>
           </span>
           <form v-if="isFarener" class="form-inline my-2 my-lg-0">
