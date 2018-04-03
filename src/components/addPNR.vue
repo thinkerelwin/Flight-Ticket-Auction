@@ -110,7 +110,7 @@ export default {
         flight: this.flight
         // recordOperator: this.recordOperator
       }
-      console.log(formData)
+      // console.log(formData)
       const authHeader = {
         headers: {
           'Authorization': 'Bearer ' + this.idToken
@@ -121,7 +121,7 @@ export default {
 
       axios.post('api/webuy', formData, authHeader)
         .then(res => {
-          console.log(res);
+          // console.log(res);
 
           this.flightMsg = '';
           this.price = '';

@@ -23,7 +23,10 @@
 
         <template v-if="isSignIn">
           <span class="navbar-text">
-            welcome, {{ username }}
+            welcome, {{ username }}, Orders availabe to you from: 
+            <template v-for="flight in flightsAvailable">
+              {{flight}} 
+            </template>
           </span>
           <form v-if="isFarener" class="form-inline my-2 my-lg-0">
             <router-link class="nav-link" to="/signup">
@@ -61,6 +64,9 @@ export default {
     },
     username() {
       return this.$store.getters.username
+    },
+    flightsAvailable() {
+      return this.$store.getters.flightsAvailable
     }
   },
   components: {

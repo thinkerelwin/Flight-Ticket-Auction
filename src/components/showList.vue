@@ -36,7 +36,7 @@
         <button class="btn btn-primary" type="button" name="search" @click="query()">查询</button>
       </div>
 
-      <table class="table table-striped table-hover table-responsive">
+      <table v-if="results.length !== 0" class="table table-striped table-hover table-responsive">
         <thead>
           <tr>
             <th scope="col">记录时间</th>
@@ -161,7 +161,7 @@ export default {
 // original function start here
 
       this.$store.dispatch('queryorder', {dateRange: this.dateRange, status: this.status})
-      console.log(this.results)
+      // console.log(this.results)
       // const formData = {
       //   startDate: this.dateRange[0].toISOString().slice(0, 10),
       //   endDate: this.dateRange[1].toISOString().slice(0 ,10),
@@ -224,7 +224,7 @@ export default {
     },
     deleteOrder(result, index) {
       this.results.splice(index, 1);
-      console.log(this.idToken)
+      // console.log(this.idToken)
       axios.delete('api/webuy', {
         headers: {
           'Authorization': 'Bearer ' + this.idToken

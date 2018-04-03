@@ -26,6 +26,7 @@
 
         </div> -->
         <div class="form-check form-check-inline">
+          <i class="fas fa-plane"></i>
           <input class="form-check-input" type="checkbox" id="airline1" value="AA" v-model="flight">
           <label class="form-check-label" for="airline1">AA</label>
           <input class="form-check-input" type="checkbox" id="airline2" value="DL" v-model="flight">
@@ -36,8 +37,9 @@
           <label class="form-check-label" for="airline4">CA</label>
         </div>
         <div class="form-check form-check-inline">
+          <!-- <i class="fas fa-plane"></i> -->
           <input class="form-check-input" type="checkbox" id="airline5" value="MU" v-model="flight">
-          <label class="form-check-label" for="airline5">MU</label>
+          <label class="form-check-label margin-left" for="airline5">MU</label>
           <input class="form-check-input" type="checkbox" id="airline6" value="CX" v-model="flight">
           <label class="form-check-label" for="airline6">CX</label>
           <input class="form-check-input" type="checkbox" id="airline7" value="OTHER" v-model="flight">
@@ -121,5 +123,14 @@ export default {
   }
   .form-check-inline label {
     margin-right: 0.6rem;
+  }
+  .form-check-inline svg {
+    margin-right: 0.8rem;
+  }
+  #airline5 {
+    margin-left: 30.8px;
+  }
+  button {
+    margin-top: 1rem;
   }
 </style>

@@ -13,7 +13,7 @@ export default new Vuex.Store({
     authType: null,
     username: null,
     availability: null,
-    results: {},
+    results: [],
     dateRange: null,
     status: null,
     warningMessage: null
@@ -39,6 +39,9 @@ export default new Vuex.Store({
     },
     warningMessage: state => {
       return state.warningMessage
+    },
+    flightsAvailable: state => {
+      return state.availability;
     }
   },
   mutations: {
@@ -60,7 +63,7 @@ export default new Vuex.Store({
       state.authType = null
       state.username = null
       state.availability = null
-      state.results = {}
+      state.results = []
       state.dateRange = null
       state.status = null
       state.warningMessage = null
@@ -217,7 +220,9 @@ export default new Vuex.Store({
         commit('queryResult', {
           orderResults: res.data.result
         })
-        console.log(state.results)
+        if (res.data.result.length == 0) {
+          // state.emptyresult = true
+        }
 
       }).catch(error => console.log(error))
     }
