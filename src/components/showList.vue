@@ -165,7 +165,7 @@ export default {
 // original function start here
 
       this.$store.dispatch('queryorder', {dateRange: this.dateRange, status: this.status})
-      // console.log(this.results)
+      console.log(this.results)
       // const formData = {
       //   startDate: this.dateRange[0].toISOString().slice(0, 10),
       //   endDate: this.dateRange[1].toISOString().slice(0 ,10),

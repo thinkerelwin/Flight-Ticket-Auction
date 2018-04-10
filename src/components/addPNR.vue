@@ -63,6 +63,7 @@
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">清空PNR</button>
             <button type="button" class="btn btn-primary" @click="submitForm()" data-dismiss="modal">提交</button>
+            <!-- <button type="button" class="btn btn-danger" @click="addFake()">Add Fake</button> -->
           </div>
         </div>
       </div>
@@ -134,7 +135,47 @@ export default {
           // console.log(this.dateRange ,this.status)
         })
         .catch(error => console.log(error))
-    }
+    },
+    // addFake () {
+    //   for (let i = 0; i < 50; i++ ) {
+    //     const formData = {
+    //       flightMsg: faker.lorem.sentence(),
+    //       price: faker.commerce.price(),
+    //       comment: faker.random.words(),
+    //       passenger: faker.name.lastName(),
+    //       deadline: faker.date.recent().toISOString().slice(0, 10),
+    //       isRush: 'false',
+    //       flight: ['MU', 'AA', 'OTHER'],
+    //       // recordOperator: this.recordOperator
+    //     }
+    //     // console.log(formData)
+    //     const authHeader = {
+    //       headers: {
+    //         'Authorization': 'Bearer ' + this.idToken
+    //       }
+    //     }
+
+    //     // console.log(this.idToken)
+
+    //     axios.post('api/webuy', formData, authHeader)
+    //       .then(res => {
+    //         // console.log(res);
+
+    //         this.flightMsg = '';
+    //         this.price = '';
+    //         this.comment = '';
+    //         this.passenger = '';
+    //         this.deadline = '';
+    //         this.flight = [];
+    //         this.isRush = false
+
+    //         // this.$store.dispatch('queryorder', {dateRange: this.dateRange, status: this.status})
+    //         // console.log(this.dateRange ,this.status)
+    //       })
+    //       .catch(error => console.log(error))
+    //   }
+      
+    // }
   }
 }
 </script>
