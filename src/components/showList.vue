@@ -32,9 +32,14 @@
           <option value="3">Three</option>
         </select>
       </div> -->
-      <div class="col-md-2">
+      <div class="col-md-2 be-center">
         <button class="btn btn-primary" type="button" name="search" @click="query()">查询</button>
       </div>
+      <div v-if="Object.keys(results).length === 0" class="col-12 be-center">
+        <p>没有搜寻结果</p>
+        <p></p>
+      </div>
+      <!-- <p>{{ Object.keys(results).length === 0 }}</p> -->
 
       <table v-if="results.length !== 0" class="table table-striped table-hover table-responsive">
         <thead>
@@ -74,7 +79,6 @@
                 確認删除
               </button> -->
             </td>
-
           </tr>
         </tbody>
       </table>
@@ -247,7 +251,7 @@ export default {
   .datechoice {
     width: 100% !important;
   }
-  select, .input-group, .btn {
+  select, .input-group, .btn, .input-group-text {
     height: 34px;
   }
   select, .btn {
@@ -260,5 +264,11 @@ export default {
   td button {
     display: block;
     margin-bottom: 5px;
+  }
+  .be-center {
+    text-align: center;
+  }
+  .be-center p {
+    margin-top: 1rem;
   }
 </style>

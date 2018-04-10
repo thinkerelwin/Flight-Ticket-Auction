@@ -83,6 +83,8 @@ export default {
 
       this.username = '';
       this.password = '';
+      this.flight = [];
+      this.cooperation = '';
       // axios.post('login', {
       //   name: this.username,
       //   password: this.password,

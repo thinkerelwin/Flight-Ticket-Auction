@@ -74,7 +74,6 @@ export default new Vuex.Store({
       axios.post('login', {
         name: authData.username,
         password: authData.password
-
       }).then(res => {
         // console.log(res)
         this.username = ''
@@ -102,7 +101,7 @@ export default new Vuex.Store({
     },
     signOut ({commit}) {
       commit('clearAuthData')
-      localStorage.removeItem('toekn')
+      localStorage.removeItem("token")
       localStorage.removeItem('authType')
       localStorage.removeItem('username')
       localStorage.removeItem('flightChoice')
@@ -164,17 +163,18 @@ export default new Vuex.Store({
         userInput.dateRange = [defaultStartDate, defaultEndDate]
       }
 
-      // console.log(userInput.dateRange)
+      let revisedStartDate = new Date(userInput.dateRange[0].getTime() + 8 * 60 * 60 * 1000);
+      let revisedEndDate = new Date(userInput.dateRange[1].getTime() + 8 * 60 * 60 * 1000);
 
-      let revisedStartDate = new Date(userInput.dateRange[0].getTime() + 8 * 60 * 60 * 1000)
-      let revisedEndDate = new Date(userInput.dateRange[1].getTime() + 8 * 60 * 60 * 1000)
+      // console.log(state.dateRange, userInput.dateRange);
+      // console.log(state.dateRange == userInput.dateRange);
 
-      commit('queryFilter', {
-        dateRange: [revisedStartDate, revisedStartDate],
+      commit("queryFilter", {
+        dateRange: userInput.dateRange,
         status: userInput.status
-      })
+      });
       // console.log(userInput.dateRange)
-      // console.log([revisedStartDate, revisedStartDate])
+      console.log([revisedStartDate, revisedEndDate]);
 
       const formData = {
         startDate: revisedStartDate.toISOString().slice(0, 10),
@@ -211,6 +211,8 @@ export default new Vuex.Store({
         },
         params: {
           limit: 'all',
+          // limit: 5,
+          // offset: 5,
           orderBy: 'datetime',
           orderMethod: 'desc',
           searching: searchString()
@@ -220,8 +222,10 @@ export default new Vuex.Store({
         commit('queryResult', {
           orderResults: res.data.result
         })
+        console.log(res)
         if (res.data.result.length == 0) {
-          // state.emptyresult = true
+          // show message if result is empty
+          // ex: state.emptyresult = true
         }
 
       }).catch(error => console.log(error))

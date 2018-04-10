@@ -4,6 +4,7 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import axios from 'axios'
+
 import store from './store'
 
 // Vue.config.productionTip = false
@@ -25,7 +26,8 @@ import store from './store'
 //   // beforeDestroy: function() { ... }
 // });
 
-axios.defaults.baseURL = 'http://kusakawa.ddns.net:8080/farener/public/'
+// axios.defaults.baseURL = 'http://kusakawa.ddns.net:8080/farener/public/'
+axios.defaults.baseURL = "http://209.135.157.161/farener/public/";
 axios.defaults.headers.get['Accepts'] = 'application/json'
 
 const reqInterceptor = axios.interceptors.request.use(config => {

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="bottom-space">
     <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
       <router-link class="navbar-brand" to="/">
         <img src="../assets/Farener-logo.png" alt="farener logo">
@@ -83,9 +83,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  .header-outer {
-
-  }
   img {
     height: 2em;
   }
@@ -108,10 +105,13 @@ export default {
   nav {
     padding-top: 0;
     padding-bottom: 0;
-    margin-bottom: 2em;
+    /* margin-bottom: 2em; */
   }
   svg {
     cursor: pointer;
+  }
+  .bottom-space {
+    margin-bottom: 2em;
   }
 
 </style>

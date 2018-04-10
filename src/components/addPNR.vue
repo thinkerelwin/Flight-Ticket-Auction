@@ -34,7 +34,7 @@
                 <label for="extra" class="col-form-label">备注:</label>
                 <input type="text" class="form-control" id="extra" v-model="comment">
               </div>
-              <div class="form-check form-check-inline">
+              <div class="form-check form-check-inline margin-right">
                 <input class="form-check-input" type="checkbox" id="airlineA" value="AA" v-model="flight">
                 <label class="form-check-label" for="airlineA">AA</label>
                 <input class="form-check-input" type="checkbox" id="airlineB" value="DL" v-model="flight">
@@ -143,5 +143,8 @@ export default {
 <style scoped>
   .modal-footer {
     border-top-width: 0;
+  }
+  .margin-right label{
+    margin-right: 5px;
   }
 </style>
