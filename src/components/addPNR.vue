@@ -131,7 +131,9 @@ export default {
           this.flight = [];
           this.isRush = false
 
+          // this.$store.dispatch('updatePage', 1)
           this.$store.dispatch('queryorder', {dateRange: this.dateRange, status: this.status})
+
           // console.log(this.dateRange ,this.status)
         })
         .catch(error => console.log(error))

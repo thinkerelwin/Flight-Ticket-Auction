@@ -26,8 +26,8 @@ import store from './store'
 //   // beforeDestroy: function() { ... }
 // });
 
-axios.defaults.baseURL = "http://209.135.157.161/farener/public/";
-// axios.defaults.baseURL = 'http://kusakawa.ddns.net:8080/farener/public/'
+// axios.defaults.baseURL = "http://209.135.157.161/farener/public/";
+axios.defaults.baseURL = 'http://kusakawa.ddns.net:8080/farener/public/'
 
 axios.defaults.headers.get['Accepts'] = 'application/json'
 

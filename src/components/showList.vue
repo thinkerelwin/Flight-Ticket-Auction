@@ -39,9 +39,9 @@
         <p>没有搜寻结果</p>
         <p></p>
       </div>
-      <!-- <p>{{ Object.keys(results).length === 0 }}</p> -->
 
-      <table v-if="results.length !== 0" class="table table-striped table-hover table-responsive">
+    <template v-if="results.length !== 0">
+      <table class="table table-striped table-hover table-responsive">
         <thead>
           <tr>
             <th scope="col">记录时间</th>
@@ -83,6 +83,15 @@
         </tbody>
       </table>
 
+      <pagination 
+        :records="entries"
+        :per-page="recordPerPage"
+        :options="{ theme: 'bootstrap4'}"
+        @paginate="changePage">
+      </pagination>
+
+      <!-- <p>{{currentPage}}</p> -->
+    </template>
 
       <!-- <div class="modal fade" id="confirmDelete" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -107,14 +116,16 @@
 </template>
 
 <script>
-import DatePicker from 'vue2-datepicker';
+import DatePicker from 'vue2-datepicker'
 import axios from 'axios'
 import orderDetails from './orderDetails.vue'
+import {Pagination} from 'vue-pagination-2'
 
 export default {
   // props: ['authData'],
   components: {
     DatePicker,
+    Pagination,
     'orderDetails': orderDetails
   },
   data () {
@@ -128,13 +139,21 @@ export default {
         }
       ],
       status: '',
+      // currentPage: 1,
+      recordPerPage: 20,
       // recordOperator: '',
       // results: {},
     }
   },
   computed: {
     results() {
-      return this.$store.getters.results
+      return this.$store.getters.results.slice((this.currentPage - 1) * this.recordPerPage, this.currentPage * this.recordPerPage)
+    },
+    entries() {
+      return this.$store.getters.entries
+    },
+    currentPage() {
+      return this.$store.getters.currentPage
     },
     idToken() {
       return this.$store.getters.idToken
@@ -145,68 +164,11 @@ export default {
   },
   methods: {
     query () {
-
-      // if no date entry, set default daterange to today
-      // code below is bugged
-      // if (!this.dateRange) {
-      //   let defaultStartDate = new Date()
-      //   let defaultEndDate = new Date()
-      //   console.log(`[${defaultStartDate.toISOString()}, ${defaultEndDate.toISOString()}]`)
-      //   defaultStartDate.setUTCHours(10)
-      //   defaultEndDate.setUTCHours(34)
-      //   console.log(`after set hours: [${defaultStartDate.toISOString().slice(0, 10)}, ${defaultEndDate.toISOString().slice(0, 10)}]`)
-      //   // this.dateRange = `[${new Date().toISOString}, ${new Date().toISOString}]`
-      //   this.dateRange = [defaultStartDate, defaultEndDate]
-      // } else if (this.dateRange[0] !== this.dateRange[1]) {
-      //   this.dateRange[0].setUTCHours(10)
-      //   this.dateRange[1].setUTCHours(34)
-      // }
-
-// original function start here
-
       this.$store.dispatch('queryorder', {dateRange: this.dateRange, status: this.status})
-      console.log(this.results)
-      // const formData = {
-      //   startDate: this.dateRange[0].toISOString().slice(0, 10),
-      //   endDate: this.dateRange[1].toISOString().slice(0 ,10),
-      //   status: this.status,
-      //   recordOperator: this.recordOperator
-      // }
-      //
-      // console.log(formData);
-      //
-      // function searchString() {
-      //   let queryString = '';
-      //
-      //   if (formData.startDate == formData.endDate) {
-      //     queryString += `[recordTime,=,${formData.startDate}]`
-      //   } else {
-      //     queryString += `[recordTime,>,${formData.startDate}],[recordTime,<,${formData.endDate}]`
-      //   }
-      //
-      //   if (formData.status) {
-      //     queryString += `,[status,=,${formData.status}]`
-      //   }
-      //   if (formData.recordOperator) {
-      //     queryString += `,[recordOperator,=,${formData.recordOperator}]` //currently bugged
-      //   }
-      //   console.log(queryString);
-      //   return queryString
-      // }
-      //
-      // axios.get('api/webuy', {
-      //   params: {
-      //     limit: 'all',
-      //     orderBy: 'datetime',
-      //     orderMethod: 'desc',
-      //     searching: searchString(),
-      //   }
-      // }).then( res => {
-      //     this.results = res.data.result;
-      //   })
-      //   .catch(error => console.log(error))
-
-// original function end here
+    },
+    changePage(page) {
+      // this.currentPage = page
+      this.$store.dispatch('updatePage', page)
     },
     changeToRush(result) {
       const authHeader = {
@@ -222,12 +184,11 @@ export default {
         .then(res => {
           alert("加急成功!")
           this.query()
-        }
-        ).catch(error => console.log(error))
+        }).catch(error => console.log(error))
 
     },
     deleteOrder(result, index) {
-      this.results.splice(index, 1);
+      // this.results.splice(index, 1);
       // console.log(this.idToken)
       axios.delete('api/webuy', {
         headers: {
@@ -236,8 +197,10 @@ export default {
         params: {
           id: result._id.$oid,
         }
-      }).then(alert("訂單已刪除!"))
-        .catch(error => console.log(error))
+      }).then(res => {
+        alert("訂單已刪除!")
+        this.query()
+      }).catch(error => console.log(error))
     },
   },
 }
@@ -261,6 +224,18 @@ export default {
   table {
     margin-top: 10px;
   }
+  /* tbody{
+    display:block;
+  } */
+  /* thead {
+    width: 100%
+  }
+  tbody {
+    height:calc(100vh - 200px);
+    overflow-y:auto;
+    width: 100%;
+  } */
+
   td button {
     display: block;
     margin-bottom: 5px;
@@ -270,5 +245,9 @@ export default {
   }
   .be-center p {
     margin-top: 1rem;
+  }
+  .VuePagination {
+    margin: 10px auto;
+    text-align: center;
   }
 </style>
