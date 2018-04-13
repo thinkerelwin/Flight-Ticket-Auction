@@ -16,8 +16,18 @@
           <input type="password" class="form-control" v-model="password" placeholder="Password" aria-label="Username" aria-describedby="basic-addon1">
         </div>
       </fieldset>
-      <button class="btn btn-primary btn-block">登录</button>
-      <p>{{warningMessage}}</p>
+      <button class="btn btn-primary btn-block" :disabled="waitResponse">
+        登录
+        <!-- <span class="be-center"v-show="waitResponse">
+          <i class="fas fa-spinner"></i>
+        </span> -->
+      </button>
+      <p class="be-center">{{warningMessage}}</p>
+      <!-- <div>
+        <div class="be-center"v-show="waitResponse">
+          <i class="fas fa-spinner"></i>
+        </div>
+      </div> -->
       <!-- <p>{{ eventBus.name }}</p> -->
     </form>
   </div>
@@ -40,7 +50,10 @@ export default {
   computed: {
     warningMessage() {
       return this.$store.getters.warningMessage
-    }
+    },
+    waitResponse() {
+      return this.$store.getters.waitResponse
+    },
   },
   methods: {
     onSubmit() {
@@ -71,17 +84,33 @@ export default {
     text-align: center;
   }
   .loginForm {
-  min-width: 250px;
-  width: 30%;
-  margin: 3% auto;
+    min-width: 250px;
+    width: 30%;
+    margin: 3% auto;
   }
 
   fieldset .input-group {
-  margin-bottom: 2rem;
+    margin-bottom: 2rem;
   }
   p {
     color: red;
     font-weight: bold;
     margin-top: 10%;
+  }
+  .be-center {
+    text-align: center;
+  }
+    /* spin animation */
+  .fa-spinner {
+    position: absolute;
+    margin-left: 8px;
+    margin-top: 3px;
+    /* vertical-align: middle; */
+    font-size: 18px;
+    animation: spin 2s linear infinite;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
 </style>

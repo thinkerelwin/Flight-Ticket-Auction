@@ -5,8 +5,6 @@ import normalAxios from 'axios'
 
 import router from './router/index'
 
-// import myPaginator from './components/showList.vue'
-
 Vue.use(Vuex)
 
 export default new Vuex.Store({
@@ -17,10 +15,10 @@ export default new Vuex.Store({
     availability: null,
     results: [],
     entries: 0,
-    currentPage: 1,
     dateRange: null,
     status: null,
-    warningMessage: null
+    warningMessage: null,
+    waitResponse: false
   },
   getters: {
     authType(state) {
@@ -35,8 +33,9 @@ export default new Vuex.Store({
     entries: state => {
       return state.entries;
     },
-    currentPage: state => {
-      return state.currentPage;
+    // came from vue pagination
+    page: state => {
+      return state.myPagination.page;
     },
     idToken: state => {
       return state.idToken;
@@ -52,6 +51,9 @@ export default new Vuex.Store({
     },
     flightsAvailable: state => {
       return state.availability;
+    },
+    waitResponse: state => {
+      return state.waitResponse;
     }
   },
   mutations: {
@@ -69,8 +71,12 @@ export default new Vuex.Store({
       state.dateRange = filterCondition.dateRange;
       state.status = filterCondition.status;
     },
+    // came from vue pagination
     updatePage(state, pageValue) {
-      state.currentPage = pageValue;
+      state.myPagination.page = pageValue;
+    },
+    resetPage(state) {
+      state.myPagination.page = 1;
     },
     clearAuthData(state) {
       state.idToken = null;
@@ -79,20 +85,25 @@ export default new Vuex.Store({
       state.availability = null;
       state.results = [];
       state.entries = 0;
-      state.currentPage = 1;
+      state.myPagination.page = 1;
       state.dateRange = null;
       state.status = null;
       state.warningMessage = null;
+    },
+    waiting(state) {
+      state.waitResponse = !state.waitResponse;
     }
   },
   actions: {
     login({ commit, state }, authData) {
+      commit("waiting");
       axios
         .post("login", {
           name: authData.username,
           password: authData.password
         })
         .then(res => {
+          commit("waiting");
           // console.log(res)
           this.username = "";
           this.password = "";
@@ -104,7 +115,7 @@ export default new Vuex.Store({
             flightChoice: res.data.userdata.flight
           });
           const now = Date.now();
-          const expirationDate = now + 3600 * 1000; //set autologOut after 1hr log in
+          const expirationDate = now + 60 * 60 * 1000; //set autologOut after 1hr log in
 
           localStorage.setItem("token", res.data.token);
           localStorage.setItem("authType", res.data.userdata.auth);
@@ -115,6 +126,7 @@ export default new Vuex.Store({
         })
         .catch(error => {
           console.log(error);
+          commit("waiting");
           state.warningMessage =
             "name and password aren't matched, please try again!";
         });
@@ -160,7 +172,7 @@ export default new Vuex.Store({
       };
       axios
         .post(
-          "http://kusakawa.ddns.net:8080/farener/public/api/user",
+          "/api/user",
           {
             name: authData.username,
             password: authData.password,
@@ -172,8 +184,6 @@ export default new Vuex.Store({
         )
         .then(res => {
           // console.log(res)
-          // this.username = ''
-          // this.password = ''
           alert(`account ${authData.username} is created!`);
           // router.replace('/')
         })
@@ -186,6 +196,7 @@ export default new Vuex.Store({
       commit("updatePage", pageValue);
     },
     queryorder({ commit, state }, userInput) {
+      commit("waiting");
       if (!userInput.dateRange) {
         let defaultStartDate = new Date();
         let defaultEndDate = new Date();
@@ -213,8 +224,6 @@ export default new Vuex.Store({
         startDate: revisedStartDate.toISOString().slice(0, 10),
         endDate: revisedEndDate.toISOString().slice(0, 10),
         status: userInput.status
-        // flight: ['AA', 'DL']
-        // recordOperator: this.recordOperator
       };
 
       // console.log(formData)
@@ -233,10 +242,6 @@ export default new Vuex.Store({
         if (formData.status) {
           queryString += `,[status,=,${formData.status}]`;
         }
-        // if (formData.recordOperator) {
-        //   queryString += `,[recordOperator,=,${formData.recordOperator}]` //currently bugged
-        // }
-        // console.log(queryString)
         return queryString;
       }
 
@@ -261,8 +266,25 @@ export default new Vuex.Store({
             orderEntries: res.data.entries
           });
           // console.log(res);
+          commit("waiting");
         })
-        .catch(error => console.log(error));
+        .catch(error => {
+          console.log(error)
+          commit("waiting");
+        });
+    }
+  },
+  modules: {
+    // came from vue pagination
+    myPagination: {
+      state: {
+        page: 1
+      },
+      mutations: {
+        ["myPagination/PAGINATE"](state, page) {
+          state.page = page;
+        }
+      }
     }
   }
   // modules: {

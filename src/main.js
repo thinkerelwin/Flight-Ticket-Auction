@@ -9,23 +9,6 @@ import store from './store'
 
 // Vue.config.productionTip = false
 
-// Vue.component('date-picker', {
-//   template: '<input/>',
-//   props: [ 'format' ],
-//   mounted: function() {
-//     var self = this;
-//     $(this.$el).datepicker({
-//       format: 'yyyy/mm/dd',
-//       todayHighlight: 'true',
-//       autoclose: true,
-//     })
-//     .on('changeDate', function(date) {
-//       // self.$emit('update-date', date);
-//     });
-//   },
-//   // beforeDestroy: function() { ... }
-// });
-
 // axios.defaults.baseURL = "http://209.135.157.161/farener/public/";
 axios.defaults.baseURL = 'http://kusakawa.ddns.net:8080/farener/public/'
 

@@ -33,40 +33,43 @@
         </select>
       </div> -->
       <div class="col-md-2 be-center">
-        <button class="btn btn-primary" type="button" name="search" @click="query()">查询</button>
+        <button class="btn btn-primary" type="button" name="search" @click="query()" :disabled="waitResponse">
+          查询
+        </button>
+      <span v-if="waitResponse">
+        <i class="fas fa-spinner"></i>
+      </span>
       </div>
+
       <div v-if="Object.keys(results).length === 0" class="col-12 be-center">
         <p>没有搜寻结果</p>
-        <p></p>
       </div>
 
     <template v-if="results.length !== 0">
-      <table class="table table-striped table-hover table-responsive">
+      <table class="table table-striped table-hover">
         <thead>
           <tr>
             <th scope="col">记录时间</th>
             <th scope="col">航段信息</th>
             <th scope="col">备注</th>
             <th scope="col">总价</th>
-            <th scope="col">可出票价格</th>
-            <th scope="col">最晚出票时间</th>
+            <th class="min-width" scope="col">可出票价格</th>
+            <th class="min-width" scope="col">最晚出票时间</th>
             <th scope="col">乘机人</th>
-            <!-- <th scope="col">操作人员</th> -->
-            <th scope="col">状态</th>
+            <th class="min-width" scope="col">状态</th>
             <th scope="col">详细</th>
             <th v-if="isFarener" scope="col">操作</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(result, index) in results" :key="result._id.$oid">
-            <th scope="row">{{ result.datetime }}</th>
+            <th>{{ result.datetime }}</th>
             <td><pre>{{ result.flightMsg }}</pre></td>
             <td>{{ result.comment }}</td>
             <td>{{ result.price }}</td>
             <td>{{ result.commitprice }}</td>
             <td>{{ result.deadline }}</td>
             <td><p v-for="passenger in result.passenger">{{ passenger['name'] }}</p></td>
-            <!-- <td>{{ result.recordOperator }}</td> -->
             <td>{{ result.status }}</td>
             <td>
               <button class="btn btn-info" data-toggle="modal" :data-target="'#modal' + index">详细</button>
@@ -84,13 +87,14 @@
       </table>
 
       <pagination 
+        :for="'myPagination'"
         :records="entries"
         :per-page="recordPerPage"
+        :vuex="true"
         :options="{ theme: 'bootstrap4'}"
         @paginate="changePage">
       </pagination>
-
-      <!-- <p>{{currentPage}}</p> -->
+      <!-- <p>{{this.page}}</p> -->
     </template>
 
       <!-- <div class="modal fade" id="confirmDelete" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -139,36 +143,38 @@ export default {
         }
       ],
       status: '',
-      // currentPage: 1,
-      recordPerPage: 20,
+      recordPerPage: 30,
       // recordOperator: '',
       // results: {},
     }
   },
   computed: {
     results() {
-      return this.$store.getters.results.slice((this.currentPage - 1) * this.recordPerPage, this.currentPage * this.recordPerPage)
+      return this.$store.getters.results.slice((this.page - 1) * this.recordPerPage, this.page * this.recordPerPage)
     },
     entries() {
       return this.$store.getters.entries
     },
-    currentPage() {
-      return this.$store.getters.currentPage
+    page() {
+      return this.$store.getters.page
     },
     idToken() {
       return this.$store.getters.idToken
     },
     isFarener() {
       return this.$store.getters.authType == 'farener'
-    }
+    },
+    waitResponse() {
+      return this.$store.getters.waitResponse
+    },
   },
   methods: {
     query () {
       this.$store.dispatch('queryorder', {dateRange: this.dateRange, status: this.status})
     },
     changePage(page) {
-      // this.currentPage = page
       this.$store.dispatch('updatePage', page)
+      // console.log(this.page)
     },
     changeToRush(result) {
       const authHeader = {
@@ -223,17 +229,29 @@ export default {
   }
   table {
     margin-top: 10px;
+    /* text-align: center; */
+    font-size: 14px;
   }
-  /* tbody{
-    display:block;
-  } */
-  /* thead {
+  thead {
     width: 100%
   }
-  tbody {
-    height:calc(100vh - 200px);
-    overflow-y:auto;
+
+  /* can use these below to adjust */
+
+  /* tr {
     width: 100%;
+    display: inline-table;
+    table-layout: fixed;
+  }
+  table{
+    height:300px;              
+    display: -moz-groupbox;    
+  }
+  tbody{
+    overflow-y: scroll;      
+    height: 200px;           
+    width: 100%;
+    position: absolute;
   } */
 
   td button {
@@ -250,4 +268,31 @@ export default {
     margin: 10px auto;
     text-align: center;
   }
+  /* spin animation */
+  .fa-spinner {
+    position: absolute;
+    top: 10px;
+    margin-left: 8px;
+    /* vertical-align: middle; */
+    font-size: 18px;
+    animation: spin 2s linear infinite;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* .min-width {
+    min-width: 75px;
+  } */
+  /* add bootstrap .table-responsive property only when reach the breakpoint */
+  @media only screen and (max-width: 1576px) {
+    .table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        -ms-overflow-style: -ms-autohiding-scrollbar;
+    }
+}
 </style>

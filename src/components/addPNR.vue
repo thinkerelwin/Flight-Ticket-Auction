@@ -23,7 +23,8 @@
                 </div>
                 <div class="col-6">
                   <label for="dead-line" class="col-form-label">最晚出票时间:</label>
-                  <input type="text" class="form-control" id="dead-line" v-model="deadline" placeholder="ex: 2018-03-27">
+                  <!-- <input type="text" class="form-control" id="dead-line" v-model="deadline" placeholder="ex: 2018-03-27"> -->
+                  <date-picker id="dead-line" class="datechoice" v-model="deadline" :not-before="new Date()" required></date-picker>
                 </div>
               </div>
               <div class="form-group">
@@ -49,7 +50,6 @@
                 <label class="form-check-label" for="airlineF">CX</label>
                 <input class="form-check-input" type="checkbox" id="airlineG" value="OTHER" v-model="flight">
                 <label class="form-check-label" for="airlineG">OTHER</label>
-                <!-- <p>{{flight}}</p> -->
               </div>
               <div class="form-check">
                 <input class="form-check-input" type="checkbox" value="'true'" id="emergency" v-model="isRush">
@@ -71,10 +71,13 @@
 </template>
 
 <script>
-// $('#startDate').datepicker();
+import DatePicker from 'vue2-datepicker'
 import axios from 'axios'
 
 export default {
+  components: {
+    DatePicker,
+  },
   data () {
     return {
       flightMsg: '',
@@ -84,7 +87,6 @@ export default {
       deadline: '',
       flight: [],
       isRush: false,
-      //recordOperator: '1' // should be take in automatically
     }
   },
   computed: {
@@ -105,10 +107,9 @@ export default {
         price: this.price,
         comment: this.comment,
         passenger: this.passenger,
-        deadline: this.deadline,
+        deadline: new Date(this.deadline.getTime() + 8 * 60 * 60 * 1000).toISOString().slice(0, 10),
         isRush: this.isRush.toString(),
         flight: this.flight
-        // recordOperator: this.recordOperator
       }
       // console.log(formData)
       const authHeader = {
@@ -131,9 +132,8 @@ export default {
           this.flight = [];
           this.isRush = false
 
-          // this.$store.dispatch('updatePage', 1)
           this.$store.dispatch('queryorder', {dateRange: this.dateRange, status: this.status})
-
+          this.$store.commit('resetPage')
           // console.log(this.dateRange ,this.status)
         })
         .catch(error => console.log(error))
@@ -189,5 +189,12 @@ export default {
   }
   .margin-right label{
     margin-right: 5px;
+  }
+  input[type="text"] {
+    height: 34px;
+  }
+  .datechoice {
+    display: block;
+    width: 100% !important;
   }
 </style>
