@@ -23,14 +23,14 @@
 
         <template v-if="isSignIn">
           <span class="navbar-text">
-            welcome, {{ username }}, Orders availabe to you from: 
+            welcome, {{ username }}, Orders availabe to you from:
             <template v-for="flight in flightsAvailable">
-              {{ flight }} 
+              {{ flight }}
             </template>
           </span>
           <form v-if="isFarener" class="form-inline my-2 my-lg-0">
-            <router-link class="nav-link" to="/signup">
-              <i class="fas fa-user-plus"></i>
+            <router-link class="nav-link" to="/showUser">
+              <i class="fas fa-user"></i>
             </router-link>
           </form>
           <form class="form-inline my-2 my-lg-0">
@@ -40,6 +40,7 @@
 
       </div>
     </nav>
+
     <template v-if="isFarener">
       <addPNR></addPNR>
     </template>
@@ -48,32 +49,34 @@
 
 <script>
 import addPNR from './addPNR.vue'
+// import addUser from './addUser.vue'
 
 export default {
   data () {
     return {
-      // username: 'Jason'
+
     }
   },
   computed: {
-    isFarener() {
-      return this.$store.getters.authType == 'farener'
+    isFarener () {
+      return this.$store.getters.authType === 'farener'
     },
-    isSignIn() {
+    isSignIn () {
       return this.$store.getters.idToken !== null
     },
-    username() {
+    username () {
       return this.$store.getters.username
     },
-    flightsAvailable() {
+    flightsAvailable () {
       return this.$store.getters.flightsAvailable
     }
   },
   components: {
     'addPNR': addPNR
+    // 'addUser': addUser
   },
   methods: {
-    leave() {
+    leave () {
       this.$store.dispatch('signOut')
     }
   }
@@ -89,12 +92,12 @@ export default {
   span {
     padding-right: 0.5em;
   }
-  .fa-sign-in-alt,
-  .fa-user-plus {
-    font-size: 1.8em;
-  }
   .fa-sign-in-alt {
+    font-size: 1.8em;
     color: #007bff;
+  }
+  .fa-user {
+    font-size: 1.5em;
   }
   .nav-item {
     font-size: 1.3em;

@@ -20,7 +20,7 @@
       <!-- <p>{{new Date(dateRange[0].getTime() + 3600 * 8000)}}</p> -->
       <!-- <p>{{dateRange}}</p>
       <p>{{new Date()}}</p> -->
-      
+
       <!-- <div class="input-group col-md-3 mb-3">
         <div class="input-group-prepend">
           <label class="input-group-text" for="operator">人员</label>
@@ -36,6 +36,15 @@
         <button class="btn btn-primary" type="button" name="search" @click="query()" :disabled="waitResponse">
           查询
         </button>
+        <!-- <button class="btn btn-secondary" type="button" name="test" @click="getGroup()">
+          讀取
+        </button>
+        <button class="btn btn-secondary" type="button" name="test" @click="creatGroup()">
+          新增
+        </button>
+        <button class="btn btn-secondary" type="button" name="test" @click="getUser()">
+          讀取USER
+        </button> -->
       <span v-if="waitResponse">
         <i class="fas fa-spinner"></i>
       </span>
@@ -69,7 +78,7 @@
             <td>{{ result.price }}</td>
             <td>{{ result.commitprice }}</td>
             <td>{{ result.deadline }}</td>
-            <td><p v-for="passenger in result.passenger">{{ passenger['name'] }}</p></td>
+            <td><p v-for="(passenger, index) in result.passenger" :key="index">{{ passenger['name'] }}</p></td>
             <td>{{ result.status }}</td>
             <td>
               <button class="btn btn-info" data-toggle="modal" :data-target="'#modal' + index">详细</button>
@@ -78,15 +87,12 @@
             <td v-if="isFarener">
               <button class="btn btn-danger addspace" @click="deleteOrder(result, index)">删除</button>
               <button v-if="result.isRush == 'false'" class="btn btn-warning" @click="changeToRush(result)">加急</button>
-              <!-- <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#confirmDelete">
-                確認删除
-              </button> -->
             </td>
           </tr>
         </tbody>
       </table>
 
-      <pagination 
+      <pagination
         :for="'myPagination'"
         :records="entries"
         :per-page="recordPerPage"
@@ -97,33 +103,16 @@
       <!-- <p>{{this.page}}</p> -->
     </template>
 
-      <!-- <div class="modal fade" id="confirmDelete" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="confirmDeleteTitle">确认删除</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">清空PNR</button>
-              <button type="button" class="btn btn-primary" @click="" data-dismiss="modal">提交</button>
-            </div>
-          </div>
-        </div>
-      </div> -->
-
     </div>
   </div>
 </template>
 
 <script>
 import DatePicker from 'vue2-datepicker'
+import {Pagination} from 'vue-pagination-2'
+
 import axios from 'axios'
 import orderDetails from './orderDetails.vue'
-import {Pagination} from 'vue-pagination-2'
 
 export default {
   // props: ['authData'],
@@ -135,48 +124,47 @@ export default {
   data () {
     return {
       dateRange: '',
-      shortcuts: [
-        {
-          text: 'Today',
-          start: new Date(),
-          end: new Date()
-        }
-      ],
+      shortcuts: true,
+      // shortcuts: [
+      //   {
+      //     text: 'Today',
+      //     start: new Date(),
+      //     end: new Date()
+      //   }
+      // ],
       status: '',
-      recordPerPage: 30,
-      // recordOperator: '',
-      // results: {},
+      recordPerPage: 30
     }
   },
   computed: {
-    results() {
+    results () {
       return this.$store.getters.results.slice((this.page - 1) * this.recordPerPage, this.page * this.recordPerPage)
     },
-    entries() {
+    entries () {
       return this.$store.getters.entries
     },
-    page() {
+    page () {
       return this.$store.getters.page
     },
-    idToken() {
+    idToken () {
       return this.$store.getters.idToken
     },
-    isFarener() {
-      return this.$store.getters.authType == 'farener'
+    isFarener () {
+      return this.$store.getters.authType === 'farener'
     },
-    waitResponse() {
+    waitResponse () {
       return this.$store.getters.waitResponse
-    },
+    }
   },
   methods: {
     query () {
       this.$store.dispatch('queryorder', {dateRange: this.dateRange, status: this.status})
     },
-    changePage(page) {
+    changePage (page) {
       this.$store.dispatch('updatePage', page)
       // console.log(this.page)
     },
-    changeToRush(result) {
+    changeToRush (result) {
       const authHeader = {
         headers: {
           'Authorization': 'Bearer ' + this.idToken
@@ -185,15 +173,14 @@ export default {
 
       axios.patch('api/webuy', {
         id: result._id.$oid,
-        isRush: 'true',
+        isRush: 'true'
       }, authHeader)
         .then(res => {
-          alert("加急成功!")
+          alert('加急成功!')
           this.query()
         }).catch(error => console.log(error))
-
     },
-    deleteOrder(result, index) {
+    deleteOrder (result, index) {
       // this.results.splice(index, 1);
       // console.log(this.idToken)
       axios.delete('api/webuy', {
@@ -201,22 +188,140 @@ export default {
           'Authorization': 'Bearer ' + this.idToken
         },
         params: {
-          id: result._id.$oid,
+          id: result._id.$oid
         }
       }).then(res => {
-        alert("訂單已刪除!")
+        alert('訂單已刪除!')
         this.query()
       }).catch(error => console.log(error))
     },
+    getGroup () {
+      axios.get('api/groups', {
+        headers: {
+          Authorization: 'Bearer ' + this.idToken
+        },
+        params: {
+          limit: 'all',
+          orderBy: 'datetime',
+          orderMethod: 'desc'
+          // searching: searchString()
+        }
+      })
+        .then(res => {
+          // this.results = res.data.result;  //how to pass this.results info back to showList.vue?
+          // commit('queryResult', {
+          //   orderResults: res.data.result,
+          //   orderEntries: res.data.entries
+          // })
+          console.log(res)
+          // commit('waiting')
+        })
+        .catch(error => {
+          console.log(error)
+          // commit('waiting')
+        })
+    },
+    creatGroup () {
+      const formData = {
+        name: 'golden3',
+        read: ['flightMsg', 'price'],
+        edit: ['passenger', 'deadline']
+      }
+      // console.log(formData)
+      const authHeader = {
+        headers: {
+          'Authorization': 'Bearer ' + this.idToken
+        }
+      }
+
+      axios.post('api/groups', formData, authHeader)
+        .then(res => {
+          console.log(res)
+
+          // this.flightMsg = ''
+          // this.price = ''
+          // this.comment = ''
+          // this.passenger = ''
+          // this.deadline = ''
+          // this.flight = []
+          // this.isRush = false
+
+          // this.$store.dispatch('queryorder', {dateRange: this.dateRange, status: this.status})
+          // this.$store.commit('resetPage')
+          // console.log(this.dateRange ,this.status)
+        })
+        .catch(error => console.log(error))
+    },
+    editGroup () {
+      const formData = {
+        id: '5ad7042b33378a24db3ee445',
+        name: 'golden',
+        read: ['flightMsg', 'price'],
+        edit: ['passenger', 'deadline']
+      }
+      // console.log(formData)
+      const authHeader = {
+        headers: {
+          'Authorization': 'Bearer ' + this.idToken
+        }
+      }
+
+      axios.post('api/groups', formData, authHeader)
+        .then(res => {
+          console.log(res)
+
+          // this.flightMsg = ''
+          // this.price = ''
+          // this.comment = ''
+          // this.passenger = ''
+          // this.deadline = ''
+          // this.flight = []
+          // this.isRush = false
+
+          // this.$store.dispatch('queryorder', {dateRange: this.dateRange, status: this.status})
+          // this.$store.commit('resetPage')
+          // console.log(this.dateRange ,this.status)
+        })
+        .catch(error => console.log(error))
+    },
+    getUser () {
+      axios.get('api/user', {
+        headers: {
+          Authorization: 'Bearer ' + this.idToken
+        },
+        params: {
+          limit: 'all'
+          // orderBy: 'datetime',
+          // orderMethod: 'desc'
+          // searching: searchString()
+        }
+      })
+        .then(res => {
+          // this.results = res.data.result;  //how to pass this.results info back to showList.vue?
+          // commit('queryResult', {
+          //   orderResults: res.data.result,
+          //   orderEntries: res.data.entries
+          // })
+          console.log(res)
+          // commit('waiting')
+        })
+        .catch(error => {
+          console.log(error)
+          // commit('waiting')
+        })
+    }
   },
+  mounted () {
+    this.query()
+  }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  .container {
-    /* background-color: rgb(236, 236, 236); */
-  }
+  /* .container {
+    background-color: rgb(236, 236, 236);
+  } */
   .datechoice {
     width: 100% !important;
   }
@@ -244,12 +349,12 @@ export default {
     table-layout: fixed;
   }
   table{
-    height:300px;              
-    display: -moz-groupbox;    
+    height:300px;
+    display: -moz-groupbox;
   }
   tbody{
-    overflow-y: scroll;      
-    height: 200px;           
+    overflow-y: scroll;
+    height: 200px;
     width: 100%;
     position: absolute;
   } */
@@ -285,6 +390,7 @@ export default {
   /* .min-width {
     min-width: 75px;
   } */
+
   /* add bootstrap .table-responsive property only when reach the breakpoint */
   @media only screen and (max-width: 1576px) {
     .table {

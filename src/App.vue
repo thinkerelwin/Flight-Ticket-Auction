@@ -1,7 +1,6 @@
 <template>
   <div id="app">
     <appHeader></appHeader>
-    <!-- <router-view @passingAuthInfo="authdata = $event" :authData="authdata"/> -->
     <router-view/>
   </div>
 </template>
@@ -14,7 +13,7 @@ export default {
   components: {
     'appHeader': appHeader
   },
-  created() {
+  created () {
     this.$store.dispatch('tryAutoLogIn')
   }
 }

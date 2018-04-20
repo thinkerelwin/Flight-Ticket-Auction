@@ -11,7 +11,7 @@
         </div>
         <div class="input-group mb-3">
           <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fa fa-lock"></i></span>
+            <span class="input-group-text adjust-padding"><i class="fa fa-lock"></i></span>
           </div>
           <input type="password" class="form-control" v-model="password" placeholder="Password" aria-label="Username" aria-describedby="basic-addon1">
         </div>
@@ -34,45 +34,29 @@
 </template>
 
 <script>
-import axios from 'axios'
 // import { eventBus } from '../App.vue'
 
 export default {
   data () {
     return {
       username: '',
-      password: '',
+      password: ''
       // userdata: {},
       // token: '',
       // warningMessage: '',
     }
   },
   computed: {
-    warningMessage() {
+    warningMessage () {
       return this.$store.getters.warningMessage
     },
-    waitResponse() {
+    waitResponse () {
       return this.$store.getters.waitResponse
-    },
+    }
   },
   methods: {
-    onSubmit() {
+    onSubmit () {
       this.$store.dispatch('login', {username: this.username, password: this.password})
-      // axios.post('login', {
-      //   name: this.username,
-      //   password: this.password,
-      // }).then(res => {
-      //     console.log("login respond: " + res);
-      //     // this.$emit('passingAuthInfo', res)
-      //     this.$store.dispatch('login', {username: this.username, password: this.password})
-      //
-      //     this.username = '';
-      //     this.password = '';
-      //   })
-      //   .catch(error => {
-      //     console.log(error)
-      //     this.warningMessage = "name and password aren't matched, please try again!"
-      //   })
     }
   }
 }
@@ -99,6 +83,10 @@ export default {
   }
   .be-center {
     text-align: center;
+  }
+  .adjust-padding {
+    padding-left: 13px;
+    padding-right: 13px;
   }
     /* spin animation */
   .fa-spinner {

@@ -4,13 +4,15 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import axios from 'axios'
+import Vuelidate from 'vuelidate'
 
 import store from './store'
 
 // Vue.config.productionTip = false
+Vue.use(Vuelidate)
 
-// axios.defaults.baseURL = "http://209.135.157.161/farener/public/";
-axios.defaults.baseURL = 'http://kusakawa.ddns.net:8080/farener/public/'
+axios.defaults.baseURL = 'http://209.135.157.161/farener/public/'
+// axios.defaults.baseURL = 'http://kusakawa.ddns.net:8080/farener/public/'
 
 axios.defaults.headers.get['Accepts'] = 'application/json'
 

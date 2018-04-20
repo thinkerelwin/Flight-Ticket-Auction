@@ -12,44 +12,52 @@
 
           <div class="modal-body">
             <form>
-              <div class="form-group">
-                  <label for="flightRoute" class="col-form-label">PNR航段信息:</label>
-                  <textarea type="textarea" class="form-control" id="flightRoute" v-model="flightMsg" rows="4"></textarea>
+              <div class="form-group" :class="{invalid: $v.flightMsg.$error}">
+                  <label for="flightRoute" class="col-form-label">PNR航段信息<span>*</span>:</label>
+                  <textarea type="textarea" class="form-control" id="flightRoute" @blur="$v.flightMsg.$touch()" v-model="flightMsg" rows="4" required></textarea>
+                  <p v-if="$v.flightMsg.$error">Don't leave this empty</p>
+                  <!-- <p>{{$v.flightMsg}}</p> -->
               </div>
               <div class="form-group row">
-                <div class="col-6">
-                  <label for="price" class="col-form-label">总价:</label>
-                  <input type="text" class="form-control" id="price" v-model="price">
+                <div class="col-6" :class="{invalid: $v.price.$error}">
+                  <label for="price" class="col-form-label">总价<span>*</span>:</label>
+                  <input type="number" class="form-control" id="price" @blur="$v.price.$touch()" v-model="price" required>
+                  <p v-if="$v.price.$error">Don't leave this empty</p>
                 </div>
                 <div class="col-6">
                   <label for="dead-line" class="col-form-label">最晚出票时间:</label>
                   <!-- <input type="text" class="form-control" id="dead-line" v-model="deadline" placeholder="ex: 2018-03-27"> -->
-                  <date-picker id="dead-line" class="datechoice" v-model="deadline" :not-before="new Date()" required></date-picker>
+                  <date-picker id="dead-line" class="datechoice" v-model="deadline" :not-before="new Date()" ></date-picker>
                 </div>
               </div>
-              <div class="form-group">
-                <label for="passengers" class="col-form-label">乘机人:</label>
-                <input type="text" class="form-control" id="passengers" v-model="passenger" placeholder="多个 '|' 隔开">
+              <div class="form-group" :class="{invalid: $v.passenger.$error}">
+                <label for="passengers" class="col-form-label">乘机人<span>*</span>:</label>
+                <input type="text" class="form-control" id="passengers" @blur="$v.passenger.$touch()" v-model="passenger" placeholder="多位乘客时，请用'|' 隔开" required>
+                <p v-if="$v.passenger.$error">Don't leave this empty</p>
               </div>
               <div class="form-group">
                 <label for="extra" class="col-form-label">备注:</label>
                 <input type="text" class="form-control" id="extra" v-model="comment">
               </div>
               <div class="form-check form-check-inline margin-right">
-                <input class="form-check-input" type="checkbox" id="airlineA" value="AA" v-model="flight">
+                <i class="fas fa-plane"></i><span class="red">*</span>
+                <input class="form-check-input" type="checkbox" id="airlineA" value="AA" @input="$v.flight.$touch()" v-model="flight">
                 <label class="form-check-label" for="airlineA">AA</label>
-                <input class="form-check-input" type="checkbox" id="airlineB" value="DL" v-model="flight">
+                <input class="form-check-input" type="checkbox" id="airlineB" value="DL" @input="$v.flight.$touch()" v-model="flight">
                 <label class="form-check-label" for="airlineB">DL</label>
-                <input class="form-check-input" type="checkbox" id="airlineC" value="UA" v-model="flight">
+                <input class="form-check-input" type="checkbox" id="airlineC" value="UA" @input="$v.flight.$touch()" v-model="flight">
                 <label class="form-check-label" for="airlineC">UA</label>
-                <input class="form-check-input" type="checkbox" id="airlineD" value="CA" v-model="flight">
+                <input class="form-check-input" type="checkbox" id="airlineD" value="CA" @input="$v.flight.$touch()" v-model="flight">
                 <label class="form-check-label" for="airlineD">CA</label>
-                <input class="form-check-input" type="checkbox" id="airlineE" value="MU" v-model="flight">
+                <input class="form-check-input" type="checkbox" id="airlineE" value="MU" @input="$v.flight.$touch()" v-model="flight">
                 <label class="form-check-label" for="airlineE">MU</label>
-                <input class="form-check-input" type="checkbox" id="airlineF" value="CX" v-model="flight">
+                <input class="form-check-input" type="checkbox" id="airlineF" value="CX" @input="$v.flight.$touch()" v-model="flight">
                 <label class="form-check-label" for="airlineF">CX</label>
-                <input class="form-check-input" type="checkbox" id="airlineG" value="OTHER" v-model="flight">
+                <input class="form-check-input" type="checkbox" id="airlineG" value="OTHER" @input="$v.flight.$touch()" v-model="flight">
                 <label class="form-check-label" for="airlineG">OTHER</label>
+              </div>
+              <div class="form-check form-check-inline margin-right">
+
               </div>
               <div class="form-check">
                 <input class="form-check-input" type="checkbox" value="'true'" id="emergency" v-model="isRush">
@@ -60,11 +68,17 @@
             </form>
           </div>
 
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">清空PNR</button>
-            <button type="button" class="btn btn-primary" @click="submitForm()" data-dismiss="modal">提交</button>
-            <!-- <button type="button" class="btn btn-danger" @click="addFake()">Add Fake</button> -->
-          </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary" @click="submitForm()" data-dismiss="modal" :disabled="$v.$invalid">提交</button>
+              <!-- <button type="button" class="btn btn-danger" @click="addFake()">Add Fake</button> -->
+            </div>
+
+            <!-- <form>
+                <label for="checkRequired" class="col-form-label">备注:</label>
+                <input type="text" class="form-control" id="checkRequired" v-model="comment" required>
+                <button type="button">check</button>
+            </form> -->
+
         </div>
       </div>
     </div>
@@ -72,11 +86,12 @@
 
 <script>
 import DatePicker from 'vue2-datepicker'
+import { required } from 'vuelidate/lib/validators'
 import axios from 'axios'
 
 export default {
   components: {
-    DatePicker,
+    DatePicker
   },
   data () {
     return {
@@ -86,28 +101,36 @@ export default {
       passenger: '',
       deadline: '',
       flight: [],
-      isRush: false,
+      isRush: false
     }
   },
   computed: {
-    idToken() {
+    idToken () {
       return this.$store.getters.idToken
     },
-    dateRange() {
+    dateRange () {
       return this.$store.getters.dateRange
     },
-    status() {
+    status () {
       return this.$store.getters.status
-    },
+    }
   },
   methods: {
     submitForm () {
+      let revisedDeadline
+
+      if (this.deadline) {
+        revisedDeadline = new Date(this.deadline.getTime() + 8 * 60 * 60 * 1000).toISOString().slice(0, 10)
+      } else {
+        revisedDeadline = this.deadline
+      }
+
       const formData = {
         flightMsg: this.flightMsg,
         price: this.price,
         comment: this.comment,
         passenger: this.passenger,
-        deadline: new Date(this.deadline.getTime() + 8 * 60 * 60 * 1000).toISOString().slice(0, 10),
+        deadline: revisedDeadline,
         isRush: this.isRush.toString(),
         flight: this.flight
       }
@@ -122,14 +145,14 @@ export default {
 
       axios.post('api/webuy', formData, authHeader)
         .then(res => {
-          // console.log(res);
+          // console.log(res)
 
-          this.flightMsg = '';
-          this.price = '';
-          this.comment = '';
-          this.passenger = '';
-          this.deadline = '';
-          this.flight = [];
+          this.flightMsg = ''
+          this.price = ''
+          this.comment = ''
+          this.passenger = ''
+          this.deadline = ''
+          this.flight = []
           this.isRush = false
 
           this.$store.dispatch('queryorder', {dateRange: this.dateRange, status: this.status})
@@ -137,7 +160,7 @@ export default {
           // console.log(this.dateRange ,this.status)
         })
         .catch(error => console.log(error))
-    },
+    }
     // addFake () {
     //   for (let i = 0; i < 50; i++ ) {
     //     const formData = {
@@ -176,8 +199,28 @@ export default {
     //       })
     //       .catch(error => console.log(error))
     //   }
-      
+
     // }
+  },
+  validations: {
+    flightMsg: {
+      required
+    },
+    price: {
+      required
+    },
+    passenger: {
+      required
+    },
+    flight: {
+      required
+    }
+    // price: '',
+    // comment: '',
+    // passenger: '',
+    // deadline: '',
+    // flight: [],
+    // isRush: false,
   }
 }
 </script>
@@ -196,5 +239,23 @@ export default {
   .datechoice {
     display: block;
     width: 100% !important;
+  }
+  label span {
+    color: red;
+  }
+  .invalid textarea,
+  .invalid input {
+    border-color: #dc3545;
+  }
+  .invalid p {
+    font-size: 14px;
+    color: #dc3545;
+  }
+  .fa-plane {
+    color: orange;
+  }
+  .red {
+    color: red;
+    margin-right: 10px;
   }
 </style>
