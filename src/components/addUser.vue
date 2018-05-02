@@ -96,7 +96,7 @@ import { required } from 'vuelidate/lib/validators'
 // import axios from 'axios'
 
 export default {
-  props: ['groupList'],
+  props: ['groupList', 'groupSelection', 'getUser'],
   data () {
     return {
       username: null,
@@ -126,6 +126,10 @@ export default {
       this.cooperation = null
       this.group = null
       this.flight = []
+
+      this.$v.$reset() // set the detect state($dirty) to false
+
+      this.getUser(this.groupSelection)
 
       // this.$v.username.$error = false,
       // this.$v.password.$error = false,

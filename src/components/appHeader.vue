@@ -29,6 +29,11 @@
             </template>
           </span>
           <form v-if="isFarener" class="form-inline my-2 my-lg-0">
+            <router-link class="nav-link" to="/showGroup">
+              <i class="fas fa-users"></i>
+            </router-link>
+          </form>
+          <form v-if="isFarener" class="form-inline my-2 my-lg-0">
             <router-link class="nav-link" to="/showUser">
               <i class="fas fa-user"></i>
             </router-link>
@@ -96,7 +101,8 @@ export default {
     font-size: 1.8em;
     color: #007bff;
   }
-  .fa-user {
+  .fa-user,
+  .fa-users {
     font-size: 1.5em;
   }
   .nav-item {

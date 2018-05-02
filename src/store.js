@@ -266,7 +266,7 @@ export default new Vuex.Store({
             orderResults: res.data.result,
             orderEntries: res.data.entries
           })
-          // console.log(res);
+          console.log(res)
           commit('waiting')
         })
         .catch(error => {

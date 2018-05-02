@@ -12,7 +12,7 @@
         <select class="custom-select" id="ticketStatus" v-model="status">
           <option value="" selected>全部</option>
           <option value="待出票">待出票</option>
-          <option value="待處理">待处理</option>
+          <option value="待估價">待估價</option>
           <option value="已出票">已出票</option>
           <option value="已取消">已取消</option>
         </select>
@@ -36,15 +36,6 @@
         <button class="btn btn-primary" type="button" name="search" @click="query()" :disabled="waitResponse">
           查询
         </button>
-        <!-- <button class="btn btn-secondary" type="button" name="test" @click="getGroup()">
-          讀取
-        </button>
-        <button class="btn btn-secondary" type="button" name="test" @click="creatGroup()">
-          新增
-        </button>
-        <button class="btn btn-secondary" type="button" name="test" @click="getUser()">
-          讀取USER
-        </button> -->
       <span v-if="waitResponse">
         <i class="fas fa-spinner"></i>
       </span>
@@ -62,7 +53,10 @@
             <th scope="col">航段信息</th>
             <th scope="col">备注</th>
             <th scope="col">总价</th>
-            <th class="min-width" scope="col">可出票价格</th>
+
+            <th v-if="!isFarener" class="min-width" scope="col">最新出价</th>
+            <!-- <th v-else class="min-width" scope="col">可出票价格</th> -->
+
             <th class="min-width" scope="col">最晚出票时间</th>
             <th scope="col">乘机人</th>
             <th class="min-width" scope="col">状态</th>
@@ -76,11 +70,15 @@
             <td><pre>{{ result.flightMsg }}</pre></td>
             <td>{{ result.comment }}</td>
             <td>{{ result.price }}</td>
-            <td>{{ result.commitprice }}</td>
+
+            <td v-if="!isFarener">{{ result.yourPrice }}</td>
+            <!-- <td v-else>{{ result.commitprice }}</td> -->
+
             <td>{{ result.deadline }}</td>
             <td><p v-for="(passenger, index) in result.passenger" :key="index">{{ passenger['name'] }}</p></td>
             <td>{{ result.status }}</td>
             <td>
+              <p v-if="result.winningBidder === username" class="gratz-text">恭喜得标!</p>
               <button class="btn btn-info" data-toggle="modal" :data-target="'#modal' + index">详细</button>
               <orderDetails :result="result" :index="index"></orderDetails>
             </td>
@@ -149,6 +147,9 @@ export default {
     idToken () {
       return this.$store.getters.idToken
     },
+    username () {
+      return this.$store.getters.username
+    },
     isFarener () {
       return this.$store.getters.authType === 'farener'
     },
@@ -194,121 +195,6 @@ export default {
         alert('訂單已刪除!')
         this.query()
       }).catch(error => console.log(error))
-    },
-    getGroup () {
-      axios.get('api/groups', {
-        headers: {
-          Authorization: 'Bearer ' + this.idToken
-        },
-        params: {
-          limit: 'all',
-          orderBy: 'datetime',
-          orderMethod: 'desc'
-          // searching: searchString()
-        }
-      })
-        .then(res => {
-          // this.results = res.data.result;  //how to pass this.results info back to showList.vue?
-          // commit('queryResult', {
-          //   orderResults: res.data.result,
-          //   orderEntries: res.data.entries
-          // })
-          console.log(res)
-          // commit('waiting')
-        })
-        .catch(error => {
-          console.log(error)
-          // commit('waiting')
-        })
-    },
-    creatGroup () {
-      const formData = {
-        name: 'golden3',
-        read: ['flightMsg', 'price'],
-        edit: ['passenger', 'deadline']
-      }
-      // console.log(formData)
-      const authHeader = {
-        headers: {
-          'Authorization': 'Bearer ' + this.idToken
-        }
-      }
-
-      axios.post('api/groups', formData, authHeader)
-        .then(res => {
-          console.log(res)
-
-          // this.flightMsg = ''
-          // this.price = ''
-          // this.comment = ''
-          // this.passenger = ''
-          // this.deadline = ''
-          // this.flight = []
-          // this.isRush = false
-
-          // this.$store.dispatch('queryorder', {dateRange: this.dateRange, status: this.status})
-          // this.$store.commit('resetPage')
-          // console.log(this.dateRange ,this.status)
-        })
-        .catch(error => console.log(error))
-    },
-    editGroup () {
-      const formData = {
-        id: '5ad7042b33378a24db3ee445',
-        name: 'golden',
-        read: ['flightMsg', 'price'],
-        edit: ['passenger', 'deadline']
-      }
-      // console.log(formData)
-      const authHeader = {
-        headers: {
-          'Authorization': 'Bearer ' + this.idToken
-        }
-      }
-
-      axios.post('api/groups', formData, authHeader)
-        .then(res => {
-          console.log(res)
-
-          // this.flightMsg = ''
-          // this.price = ''
-          // this.comment = ''
-          // this.passenger = ''
-          // this.deadline = ''
-          // this.flight = []
-          // this.isRush = false
-
-          // this.$store.dispatch('queryorder', {dateRange: this.dateRange, status: this.status})
-          // this.$store.commit('resetPage')
-          // console.log(this.dateRange ,this.status)
-        })
-        .catch(error => console.log(error))
-    },
-    getUser () {
-      axios.get('api/user', {
-        headers: {
-          Authorization: 'Bearer ' + this.idToken
-        },
-        params: {
-          limit: 'all'
-          // orderBy: 'datetime',
-          // orderMethod: 'desc'
-          // searching: searchString()
-        }
-      })
-        .then(res => {
-          // this.results = res.data.result;  //how to pass this.results info back to showList.vue?
-          // commit('queryResult', {
-          //   orderResults: res.data.result,
-          //   orderEntries: res.data.entries
-          // })
-          console.log(res)
-          // commit('waiting')
-        })
-        .catch(error => {
-          console.log(error)
-          // commit('waiting')
-        })
     }
   },
   mounted () {
@@ -373,6 +259,11 @@ export default {
     margin: 10px auto;
     text-align: center;
   }
+  .gratz-text {
+    color: red;
+    font-weight: bold;
+  }
+
   /* spin animation */
   .fa-spinner {
     position: absolute;
@@ -392,7 +283,7 @@ export default {
   } */
 
   /* add bootstrap .table-responsive property only when reach the breakpoint */
-  @media only screen and (max-width: 1576px) {
+  /* @media only screen and (max-width: 1576px) {
     .table {
         display: block;
         width: 100%;
@@ -400,5 +291,5 @@ export default {
         -webkit-overflow-scrolling: touch;
         -ms-overflow-style: -ms-autohiding-scrollbar;
     }
-}
+} */
 </style>

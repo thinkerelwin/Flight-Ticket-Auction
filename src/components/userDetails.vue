@@ -10,7 +10,7 @@
             </button>
           </div>
 
-          <form @submit.prevent="reviseUser">
+          <form>
             <div class="modal-body">
               <fieldset>
                 <div class="input-group mb-3">
@@ -40,11 +40,11 @@
                   <div class="input-group-prepend">
                       <label class="input-group-text icon-users"><i class="fas fa-users"></i></label>
                   </div>
-                  <!-- use belongGroup() so it can load the value when elements are created -->
-                  <select class="custom-select" :id="'groupName' + index" @input="$v.user.group.$touch()">
-                    <option v-for="(thisGroup, i) in groupList" :value="thisGroup.name" :key="i">{{thisGroup.name}}</option>
+                  <!-- USED to use belongGroup() so it can load the value when elements are created -->
+                  <select class="custom-select" :id="'groupName' + index" @blur="$v.user.group.$touch()" v-model="user.group.$oid">
+                    <option v-for="(thisGroup, i) in groupList" :value="thisGroup._id.$oid" :key="i" :selected="user.group.$oid === thisGroup._id.$oid">{{thisGroup.name}}</option>
                   </select>
-                  <p>{{user.group}}</p>
+                  <!-- <p>{{user.group}}</p> -->
                 </div>
                 <div class="form-check form-check-inline">
                   <i class="fas fa-plane"></i>
@@ -70,7 +70,7 @@
             </div>
 
             <div class="modal-footer">
-              <button type="submit" class="btn btn-primary btn-block" :disabled="$v.user.$invalid">编辑</button>
+              <button type="submit" class="btn btn-primary btn-block" @click="reviseUser" data-dismiss="modal" :disabled="$v.user.$invalid">编辑</button>
             </div>
           </form>
         </div>
@@ -102,14 +102,17 @@ export default {
     }
   },
   methods: {
-    belongGroup () {
-      let self = this
+    // belongGroup () {
+    //   let self = this
 
-      function whichGroup (itemID) {
-        return itemID._id.$oid === self.user.group.$oid
-      }
-      return (this.groupList.find(whichGroup)).name
-    },
+    //   function whichGroup (itemID) {
+    //     return itemID._id.$oid === self.user.group.$oid
+    //   }
+
+    //   console.log(this.groupList.find(whichGroup))
+    //   // return this.groupList.find(whichGroup).name
+    //   return this.groupList.find(whichGroup)
+    // },
     reviseUser () {
       const authHeader = {
         headers: {
@@ -120,10 +123,10 @@ export default {
       axios.patch('api/user', {
         name: this.user.name,
         cooperation: this.user.cooperation,
-        // group: this.user.group,
-        group: this.group,
+        group: this.user.group.$oid,
         flight: this.user.flight
       }, authHeader).then(res => {
+        console.log(res)
         this.getUser(this.groupSelection)
       }).catch(error => console.log(error))
     }

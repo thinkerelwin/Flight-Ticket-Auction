@@ -12,6 +12,7 @@ import showList from '@/components/showList'
 const login = () => import('@/components/login')
 // const showList = () => import("@/components/showList");
 const showUser = () => import('@/components/showUser')
+const showGroup = () => import('@/components/showGroup')
 
 Vue.use(Router)
 
@@ -39,6 +40,18 @@ export default new Router({
       path: '/showUser',
       name: 'showUser',
       component: showUser,
+      beforeEnter (to, from, next) {
+        if (store.state.idToken) {
+          next()
+        } else {
+          next('/login')
+        }
+      }
+    },
+    {
+      path: '/showGroup',
+      name: 'showGroup',
+      component: showGroup,
       beforeEnter (to, from, next) {
         if (store.state.idToken) {
           next()

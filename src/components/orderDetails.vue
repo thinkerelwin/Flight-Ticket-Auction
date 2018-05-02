@@ -32,7 +32,6 @@
                 <div class="form-group row">
                   <div class="col-6">
                     <label for="specific-dead-line" class="col-form-label">最晚出票时间:</label>
-                    <!-- <input type="text" class="form-control" id="specific-dead-line" v-model="result.deadline" placeholder="ex: 2018-03-27"> -->
                     <date-picker id="specific-dead-line" class="datechoice" v-model="result.deadline" :not-before="new Date()"></date-picker>
                   </div>
                   <div class="col-6">
@@ -87,6 +86,52 @@
                 <div>
                   <button class="btn btn-success center-button" type="button" @click="reviseTicket(result)" data-dismiss="modal" :disabled="checkValidation">修改订单</button>
                 </div>
+
+                <div class="form-group row margin-top">
+                  <div class="input-group col-6">
+                    <div class="input-group-prepend">
+                      <label class="input-group-text" for="agtSelection">报价者</label>
+                    </div>
+                    <select class="custom-select" id="agtSelection" v-model="agentSelection">
+                      <option v-for="(price, agent, i) in result.auction" :value="agent" :key="i">{{agent}}</option>
+                    </select>
+                  </div>
+                  <div class="input-group col-6">
+                    <div class="input-group-prepend">
+                      <label class="input-group-text" for="bidPrice">出价:</label>
+                    </div>
+                    <input type="number" class="form-control" id="bidPrice" @input="$v.commitPrice.$touch()" v-model="commitPrice">
+                  </div>
+                </div>
+
+                <div>
+                  <button class="btn btn-info center-button" type="button" @click="negotiatePrice(result)" data-dismiss="modal" :disabled="$v.commitPrice.$invalid || $v.agentSelection.$invalid">修改出价</button>
+                </div>
+
+                <div class="form-group row margin-top">
+                  <div class="input-group col-6">
+                    <div class="input-group-prepend">
+                      <label class="input-group-text" for="agtSelection">得标者</label>
+                    </div>
+                    <select class="custom-select" id="agtSelection" v-model="winner">
+                      <option v-for="(price, agent, i) in result.auction" :value="agent" :key="i">{{agent}}</option>
+                    </select>
+                  </div>
+                  <div class="col-6">
+                    <button class="btn btn-success" type="button" @click="selectWinner(result)" data-dismiss="modal" :disabled="$v.winner.$invalid">确认得标</button>
+                  </div>
+                </div>
+
+                <div v-if="result.auction" class="form-group message-board">
+                  <p v-for="(value, key, i) in result.auction" :key="i">
+                    业者: {{key}}  最新出价: {{value}}
+                  </p>
+                </div>
+                <div v-if="result.auctionLog" class="form-group message-board">
+                  <p v-for="(valueRecord, key, i) in result.auctionLog" :key="i">
+                    业者: {{key}}  出价纪录: <ol><li v-for="(value, i) in valueRecord" :key="i" class="actAsBlock">{{ value }}</li></ol>
+                  </p>
+                </div>
                 <div class="form-group message-board">
                   <p v-for="(log, i) in result.logs" :key="i">
                     记录时间: {{log.time}}  操作人: {{log.operator}}  <b>描述: </b><span v-for="(specificLog, i) in log.operation" :key="i">{{specificLog}}, </span>
@@ -99,12 +144,16 @@
               <form>
                 <div class="form-group">
                     <label for="specific-flightRoute" class="col-form-label">PNR航段信息:</label>
-                    <p>{{result.flightMsg}}</p>
+                    <p><pre>{{result.flightMsg}}</pre></p>
                 </div>
                 <div class="form-group row">
                   <div class="col-6">
                     <label for="specific-price" class="col-form-label">总价:</label>
                     <p>{{result.price}}</p>
+                  </div>
+                    <div class="col-6">
+                    <label class="col-form-label">最新出价:</label>
+                    <p>{{result.yourPrice}}</p>
                   </div>
                 </div>
                 <div class="form-group row">
@@ -112,7 +161,7 @@
                     <label for="specific-dead-line" class="col-form-label">最晚出票时间:</label>
                     <p>{{result.deadline}}</p>
                   </div>
-                  <div class="col-6">
+                  <div v-if="result.winningBidder === username" class="col-6">
                     <label for="recordLocator" class="col-form-label">订位代码:</label>
                     <input type="text"
                            class="form-control"
@@ -121,22 +170,26 @@
                            v-model="result.recordLocator">
                   </div>
                 </div>
-                <div class="form-group row" v-for="(passenger, index) in result.passenger" :key="index">
+                <div class="form-group row"
+                     v-for="(passenger, index) in result.passenger"
+                     :class="{invalid: $v.result.passenger.$each[index].ticketNumber.$error}"
+                     :key="index">
                   <div class="col-6">
                     <label for="specific-passengers" class="col-form-label">乘机人:</label>
                     <p>{{passenger['name']}}</p>
                   </div>
-                  <div class="col-6">
+                  <div v-if="result.winningBidder === username" class="col-6">
                     <label :for="'specific-ticketNumber' + index" class="col-form-label">票号:</label>
                     <input type="text"
                            class="form-control"
                            :id="'specific-ticketNumber' + index"
                            @input="$v.result.passenger.$each[index].ticketNumber.$touch()"
                            v-model="passenger.ticketNumber">
+                    <p v-if="!$v.result.passenger.$each[index].ticketNumber.minLength">ticket number must be {{$v.result.passenger.$each[index].ticketNumber.$params.minLength.min }} letters.</p>
                   </div>
                 </div>
-                <div class="form-group row">
-                  <div class="offset-6 col-6">
+                <div v-if="result.winningBidder === username" class="form-group row">
+                  <div class="offset-6 col-6 center-space">
                     <button type="button" class="btn btn-success" @click="confirmTicket(result)" data-dismiss="modal" :disabled="checkValidation">确认出票</button>
                   </div>
                 </div>
@@ -149,8 +202,8 @@
                   <!-- </div> -->
                 </div>
                 <div class="form-group row">
-                  <div class="offset-6 col-6">
-                    <button type="button" class="btn btn-warning" @click="negotiatePrice(result)" data-dismiss="modal" :disabled="$v.commitPrice.$invalid">暂不能出票</button>
+                  <div class="offset-6 col-6 center-space">
+                    <button type="button" class="btn btn-warning" @click="negotiatePrice(result)" data-dismiss="modal" :disabled="$v.commitPrice.$invalid">出价</button>
                   </div>
                 </div>
                 <div class="form-group">
@@ -164,9 +217,14 @@
                   </div>
                 </div>
                 <div class="form-group row">
-                  <div class="offset-6 col-6">
+                  <div class="offset-6 col-6 center-space">
                     <button type="button" class="btn btn-danger" @click="cancelOrder(result)" data-dismiss="modal" :disabled="$v.rejectReason.$invalid" >拒绝出票</button>
                   </div>
+                </div>
+                <div class="form-group message-board" v-if="result.yourAuctionLog !== 'none'">
+                  <p>
+                    出价纪录: <span v-for="(valueRecord, key, i) in result.yourAuctionLog" :key="i" class="actAsBlock">{{ valueRecord }}</span>
+                  </p>
                 </div>
                 <div class="form-group message-board">
                   <p v-for="(log, i) in result.logs" :key="i">
@@ -184,7 +242,7 @@
 
 <script>
 import DatePicker from 'vue2-datepicker'
-import { required } from 'vuelidate/lib/validators'
+import { required, minLength } from 'vuelidate/lib/validators'
 import axios from 'axios'
 
 export default {
@@ -195,7 +253,9 @@ export default {
   data () {
     return {
       rejectReason: null,
-      commitPrice: null
+      commitPrice: null,
+      agentSelection: null,
+      winner: null
     }
   },
   computed: {
@@ -204,6 +264,9 @@ export default {
     },
     idToken () {
       return this.$store.getters.idToken
+    },
+    username () {
+      return this.$store.getters.username
     },
     dateRange () {
       return this.$store.getters.dateRange
@@ -235,10 +298,14 @@ export default {
       let revisedDeadline
 
       // check date changed or not
-      if (result.deadline.length !== 10) {
-        revisedDeadline = new Date(result.deadline.getTime() + 8 * 60 * 60 * 1000).toISOString().slice(0, 10)
+      if (result.hasOwnProperty('deadline')) {
+        if (result.deadline.length !== 10) {
+          revisedDeadline = new Date(result.deadline.getTime() + 8 * 60 * 60 * 1000).toISOString().slice(0, 10)
+        } else {
+          revisedDeadline = result.deadline
+        }
       } else {
-        revisedDeadline = result.deadline
+        revisedDeadline = undefined
       }
 
       const authHeader = {
@@ -247,7 +314,7 @@ export default {
         }
       }
 
-      // console.log(revisedDeadline)
+      console.log(revisedDeadline)
 
       axios.patch('api/webuy', {
         id: result._id.$oid,
@@ -263,6 +330,23 @@ export default {
         this.$store.dispatch('queryorder', {dateRange: this.dateRange, status: this.status})
       }).catch(error => console.log(error))
     },
+    selectWinner (result) {
+      const authHeader = {
+        headers: {
+          'Authorization': 'Bearer ' + this.idToken
+        }
+      }
+
+      axios.patch('api/webuy', {
+        id: result._id.$oid,
+        winningBidder: this.winner,
+        status: '待出票'
+      }, authHeader).then(res => {
+        console.log(res)
+        this.winner = null
+        this.$store.dispatch('queryorder', {dateRange: this.dateRange, status: this.status})
+      }).catch(error => console.log(error))
+    },
     confirmTicket (result) {
       const authHeader = {
         headers: {
@@ -272,10 +356,7 @@ export default {
 
       axios.patch('api/webuy', {
         id: result._id.$oid,
-        // flightMsg: result.flightMsg,
-        // price: result.price,
         recordLocator: result.recordLocator,
-        // commitprice: result.commitprice,
         status: '已出票',
         passenger: result.passenger
       }, authHeader).then(res => {
@@ -289,19 +370,45 @@ export default {
         }
       }
 
-      axios.patch('api/webuy', {
-        // data: {
-        //   id: result._id.$oid,
-        //   passenger: [{"name": "elwin","ticketNumber": "123123"}, {"name": "kwan"}]
-        // }
+      let commitName
+
+      if (this.agentSelection !== null) {
+        commitName = this.agentSelection
+      } else {
+        commitName = this.username
+      }
+
+      axios.patch('api/commitprice', {
         id: result._id.$oid,
-        recordLocator: result.recordLocator,
-        commitprice: this.commitPrice,
-        status: '待處理'
+        price: this.commitPrice,
+        name: commitName
       }, authHeader).then(res => {
+        console.log(res)
+        this.agentSelection = null
+        this.commitPrice = null
         this.$store.dispatch('queryorder', {dateRange: this.dateRange, status: this.status})
       }).catch(error => console.log(error))
     },
+    // negotiatePrice (result) {
+    //   const authHeader = {
+    //     headers: {
+    //       'Authorization': 'Bearer ' + this.idToken
+    //     }
+    //   }
+
+    //   axios.patch('api/webuy', {
+    //     // id: result._id.$oid,
+    //     // recordLocator: result.recordLocator,
+    //     // commitprice: this.commitPrice,
+    //     // status: '待處理'
+    //     id: result._id.$oid,
+    //     price: this.commitPrice,
+    //     name: this.username
+    //   }, authHeader).then(res => {
+    //     console.log(res)
+    //     this.$store.dispatch('queryorder', {dateRange: this.dateRange, status: this.status})
+    //   }).catch(error => console.log(error))
+    // },
     cancelOrder (result) {
       const authHeader = {
         headers: {
@@ -335,7 +442,9 @@ export default {
             required
           },
           ticketNumber: {
-            required
+            required,
+            minLength: minLength(13),
+            maxLength: minLength(13)
           }
         }
       },
@@ -351,6 +460,12 @@ export default {
     },
     rejectReason: {
       required
+    },
+    agentSelection: {
+      required
+    },
+    winner: {
+      required
     }
   }
 }
@@ -358,48 +473,63 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  .modal-header {
-    border-bottom-width: 0;
-  }
-  .modal-footer {
-    border-top-width: 0;
-  }
-  .message-board {
-    border: 1px solid grey;
-    padding: 5px;
-    margin-bottom: 0;
-    font-size: 14px;
-  }
-  .center-button {
-    display: block;
-    margin: 10px auto;
-  }
-  .margin-right label{
-    margin-right: 5px;
-  }
-  input[type="text"] {
-    height: 34px;
-  }
-  .datechoice {
-    display: block;
-    width: 100% !important;
-  }
-  label span {
-    color: red;
-  }
-  .invalid textarea,
-  .invalid input {
-    border-color: #dc3545;
-  }
-  .invalid p {
-    font-size: 14px;
-    color: #dc3545;
-  }
-  .fa-plane {
-    color: orange;
-  }
-  .red {
-    color: red;
-    margin-right: 10px;
-  }
+.modal-header {
+  border-bottom-width: 0;
+}
+.modal-footer {
+  border-top-width: 0;
+}
+.message-board {
+  border: 1px solid grey;
+  padding: 5px;
+  margin-bottom: 0;
+  font-size: 14px;
+}
+.center-button {
+  display: block;
+  margin: 10px auto;
+}
+.margin-right label {
+  margin-right: 5px;
+}
+input[type="text"] {
+  height: 34px;
+}
+.datechoice {
+  display: block;
+  width: 100% !important;
+}
+label span {
+  color: red;
+}
+.invalid textarea,
+.invalid input {
+  border-color: #dc3545;
+}
+.invalid p {
+  font-size: 14px;
+  color: #dc3545;
+}
+.fa-plane {
+  color: orange;
+}
+.red {
+  color: red;
+  margin-right: 10px;
+}
+.actAsBlock {
+  display: block;
+  text-indent: 16px;
+}
+.input-group-text {
+  height: 38px;
+}
+.margin-top {
+  margin-top: 50px;
+}
+.center-space {
+  display: flex;
+  justify-content: center;
+}
+
 </style>

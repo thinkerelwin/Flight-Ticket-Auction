@@ -132,7 +132,8 @@ export default {
         passenger: this.passenger,
         deadline: revisedDeadline,
         isRush: this.isRush.toString(),
-        flight: this.flight
+        flight: this.flight,
+        status: '待估價'
       }
       // console.log(formData)
       const authHeader = {
@@ -145,7 +146,7 @@ export default {
 
       axios.post('api/webuy', formData, authHeader)
         .then(res => {
-          // console.log(res)
+          console.log(res)
 
           this.flightMsg = ''
           this.price = ''
@@ -154,6 +155,8 @@ export default {
           this.deadline = ''
           this.flight = []
           this.isRush = false
+
+          this.$v.$reset() // set the detect state($dirty) to false
 
           this.$store.dispatch('queryorder', {dateRange: this.dateRange, status: this.status})
           this.$store.commit('resetPage')
