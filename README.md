@@ -1,6 +1,35 @@
-# we-buy
+# User Story
 
-> Farener We-Buy min site
+> A website let the owner add flight route order that can be seen by specific agents, those agents may join this auction if they got available space, when owner and agent both agree on that price, deal is closed.
+
+訂單流程：訂單成立 => "待估價" -- 業者出價, 業主接受報價 => "待出票" -- 得標者填入票號、訂位代碼 => "已出票"
+
+Visit it via the link near the head or <a href="https://the-voice-within.herokuapp.com/">here</a> .
+
+## Architecture & Functions
+
+<ul>
+  <li>It's a Single Page Application(SPA)</li>
+  <li>Authenticaiton & Authorization</li>
+  <li>User will stay log in for 1 hr</li>
+  <li>Form validation on minimum length and require field</li>
+  <li>CRUD on order, users and groups</li>
+  <li>DatePicker & Paginator</li>
+</ul>
+
+## Package Used
+
+<ul>
+  <li>vue</li>
+  <li>vuex</li>
+  <li>vue-router</li>
+  <li>axios</li>
+  <li>bootstrap 4</li>
+  <li>fontawesome 5</li>
+  <li>vuelidate</li>
+  <li>vue2-datepicker</li>
+  <li>vue-pagination-2</li>
+</ul>
 
 ## Build Setup
 
