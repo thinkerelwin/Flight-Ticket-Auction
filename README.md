@@ -18,8 +18,9 @@ Visit it via the link near the head or <a href="http://ticket-auction.surge.sh/"
   <li>Single Page Application(SPA)</li>
   <li>Authenticaiton & Authorization</li>
   <li>User will stay log in for 1 hr</li>
-  <li>Form validation on minimum length and require field</li>
+  <li>Form validation on minimum length and require field</li>
   <li>CRUD on order, users and groups</li>
+  <li>Autoload today's order, groups and users when loading correspond components</li>
   <li>DatePicker & Paginator</li>
 </ul>
 
