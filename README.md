@@ -12,18 +12,6 @@ Users can only see their own bidding price, not others.
 
 Visit it via the link near the head or <a href="http://ticket-auction.surge.sh/">here</a> .
 
-## Architecture & Functions
-
-<ul>
-  <li>Single Page Application(SPA)</li>
-  <li>Authenticaiton & Authorization</li>
-  <li>User will stay log in for 1 hr</li>
-  <li>Form validation on minimum length and require field</li>
-  <li>CRUD on order, users and groups</li>
-  <li>Autoload today's order, groups and users when loading correspond components</li>
-  <li>DatePicker & Paginator</li>
-</ul>
-
 ## Package Used
 
 <ul>
@@ -38,20 +26,14 @@ Visit it via the link near the head or <a href="http://ticket-auction.surge.sh/"
   <li>vue-pagination-2</li>
 </ul>
 
-## Build Setup
+## Architecture & Functions
 
-``` bash
-# install dependencies
-npm install
-
-# serve with hot reload at localhost:8080
-npm run dev
-
-# build for production with minification
-npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
-```
-
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+<ul>
+  <li>Single Page Application(SPA)</li>
+  <li>Authenticaiton & Authorization</li>
+  <li>User will stay log in for 1 hr</li>
+  <li>Form validation on minimum length and require field</li>
+  <li>CRUD on order, users and groups</li>
+  <li>Autoload today's order, groups and users when loading correspond components</li>
+  <li>DatePicker & Paginator</li>
+</ul>
